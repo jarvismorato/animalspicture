@@ -515,7 +515,25 @@
             let ad = document.createElement('div');
             // Usamos a mesma estrutura de card do post, mas com classe especifica
             ad.className = 'card post post-ad';
-            ad.innerHTML = `
+            ad.innerHTML = `function inserirAnuncio(feedEl) {
+    // ...
+    ad.innerHTML = `
+        <div class="ad-badge">PUBLICIDADE</div>
+        
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-SEU_ID"
+             data-ad-slot="SEU_SLOT"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+        
+        <div style="text-align:center...">...</div>
+    `;
+    // ...
+}
                 <div class="ad-badge">PUBLICIDADE</div>
                 <div class="ad-content">
                     <p style="font-size:16px; color:#fff;">Espaço Patrocinado</p>

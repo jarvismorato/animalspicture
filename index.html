@@ -151,10 +151,14 @@
         .config-section { margin: 18px 0; padding-top: 18px; border-top: 1px solid var(--border); text-align: left; }
         .config-section:first-of-type { border-top: none; }
         .config-section h4 { margin: 0 0 10px; font-size: 14px; color: #888; text-transform: uppercase; }
+        .config-link { color: var(--green); text-decoration: none; font-size: 14px; word-break: break-all; }
+        .config-link:hover { text-decoration: underline; }
         
-        /* ANÚNCIO */
-        .ad-container { background-color: #000; color: #555; padding: 20px; text-align: center; margin-bottom: 25px; border-radius: 8px; border: 1px dashed #444; }
-        .remove-ads-link { display: block; margin-top: 10px; color: var(--gold); font-size: 12px; cursor: pointer; text-decoration: underline; }
+        /* ANÚNCIO (ESTILO POST) */
+        .post-ad { border: 2px dashed #444; background: #000; }
+        .ad-badge { background: #FFD700; color: #000; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-bottom: 10px; display: inline-block; }
+        .ad-content { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 120px; color: #777; font-size: 13px; }
+        .remove-ads-link { margin-top: 10px; color: var(--gold); font-size: 12px; cursor: pointer; text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -233,15 +237,15 @@
             <button class="close-btn" onclick="fechar('modalPremium')">&times;</button>
             <h2 style="color:var(--gold);">Seja Premium 💎</h2>
             <div class="plan-card">
-                <div>Plano Ilimitado</div>
-                <div style="font-size:28px; color:var(--gold); font-weight:bold;">R$ 19,90</div>
-                <ul style="text-align:left; font-size:14px; color:#aaa; list-style:none; padding:0;">
-                    <li>✅ Postagens Ilimitadas</li>
-                    <li>✅ Zero Anúncios</li>
-                    <li>✅ Destaque Dourado</li>
+                <div>Plano VIP</div>
+                <div style="font-size:32px; color:var(--gold); font-weight:bold;">R$ 2,99<small style="font-size:14px; color:#aaa;">/mês</small></div>
+                <ul style="text-align:left; font-size:14px; color:#aaa; list-style:none; padding:0; margin-top:15px; line-height: 1.8;">
+                    <li>✅ <strong>Postagens Ilimitadas</strong></li>
+                    <li>✅ <strong>Zero Anúncios</strong> (Navegação Limpa)</li>
+                    <li>✅ Destaque Dourado no Perfil</li>
                 </ul>
             </div>
-            <button class="btn-green" style="background:var(--gold); color:black;" onclick="assinarPremium()">Assinar Agora</button>
+            <button class="btn-green" style="background:var(--gold); color:black;" onclick="assinarPremium()">Assinar Agora (R$ 2,99)</button>
         </div>
     </div>
 
@@ -273,6 +277,12 @@
             </div>
 
             <div class="config-section">
+                <h4>Suporte</h4>
+                <p style="font-size:13px; color:#aaa; margin-bottom:5px;">Precisa de ajuda ou quer denunciar algo?</p>
+                <a class="config-link" href="mailto:animalspicturehelp@gmail.com">animalspicturehelp@gmail.com</a>
+            </div>
+
+            <div class="config-section">
                 <h4>Conta</h4>
                 <p style="font-size:12px; color:#888;">ID: <span id="userIdDisplay">---</span></p>
                 <button class="btn-green" style="background:var(--red); margin-top:10px;" onclick="logout()">Sair da Conta</button>
@@ -281,9 +291,9 @@
     </div>
 
     <script>
-        // === DEFINIÇÃO DO ADMIN ===
-        // Substitua pelo seu e-mail do Google se quiser garantir
+        // === ADMIN E CONFIG ===
         const ADMIN_EMAIL = "jarvismorato@gmail.com"; 
+        const LIMITE_DIARIO = 29;
 
         const CATEGORIAS_DATA = {
             "Cães": ["Vira-lata (SRD)", "Labrador", "Poodle", "Bulldog", "Golden Retriever", "Pastor Alemão", "Shih Tzu", "Outro"],
@@ -293,7 +303,6 @@
             "Outros": ["Cavalo", "Peixes", "Répteis", "Animais de Fazenda", "Exótico"]
         };
 
-        const LIMITE_DIARIO = 29;
         let usuario = { nome: "Visitante", foto: "", email: "", premium: false };
         let postsHoje = 0;
         let contadorPostsSessao = 1;
@@ -310,11 +319,9 @@
             initComentarios();
         };
 
-        // === 1. LÓGICA DE CATEGORIAS (Filtros e Selects) ===
         function inicializarCategorias() {
             const topicBar = document.getElementById('topicBar');
             const catSelect = document.getElementById('catSelect');
-
             for (let cat in CATEGORIAS_DATA) {
                 let btn = document.createElement('button');
                 btn.className = 'topic-btn';
@@ -361,7 +368,6 @@
             });
         }
 
-        // === 2. LÓGICA DE LOGIN E USUÁRIO ===
         function carregarDadosUsuario() {
             if(localStorage.getItem('app_nome')) usuario.nome = localStorage.getItem('app_nome');
             if(localStorage.getItem('app_foto')) usuario.foto = localStorage.getItem('app_foto');
@@ -369,41 +375,31 @@
             if(localStorage.getItem('app_premium') === 'true') {
                 usuario.premium = true;
             }
-            
-            // Verifica se é admin ao carregar
             aplicarEstilosEspeciais();
             atualizarInterface();
         }
 
         function handleLogin(response) {
             const data = decodeJwt(response.credential);
-            
             usuario.foto = data.picture;
             usuario.nome = data.name;
-            usuario.email = data.email; // Salva o email para verificação
-
+            usuario.email = data.email;
             localStorage.setItem('app_nome', usuario.nome);
             localStorage.setItem('app_foto', usuario.foto);
             localStorage.setItem('app_email', usuario.email);
-
             aplicarEstilosEspeciais();
             atualizarInterface();
         }
 
-        function isAdmin() {
-            // Verifica se o email logado é o do dono
-            return usuario.email === ADMIN_EMAIL;
-        }
+        function isAdmin() { return usuario.email === ADMIN_EMAIL; }
 
         function aplicarEstilosEspeciais() {
             const img = document.getElementById('headerImg');
-            // Remove classes antigas
             img.classList.remove('premium-border', 'admin-border');
-
             if (isAdmin()) {
-                img.classList.add('admin-border'); // Borda vermelha para Admin
+                img.classList.add('admin-border');
             } else if (usuario.premium) {
-                img.classList.add('premium-border'); // Borda dourada para Premium
+                img.classList.add('premium-border');
             }
         }
 
@@ -413,13 +409,11 @@
                 document.getElementById('loggedArea').style.display = 'flex';
                 document.getElementById('headerImg').src = usuario.foto;
                 document.getElementById('postBox').style.display = 'block';
-                
                 document.getElementById('editNome').value = usuario.nome;
                 document.getElementById('editFoto').value = usuario.foto;
                 document.getElementById('previewImg').src = usuario.foto;
                 document.getElementById('userIdDisplay').innerText = usuario.email || "---";
             }
-
             let hoje = new Date().toLocaleDateString();
             if (localStorage.getItem('app_data_posts') !== hoje) {
                 postsHoje = 0;
@@ -431,13 +425,11 @@
             toggleCommentForms();
         }
 
-        // === 3. PUBLICAR POST ===
         function publicar(e) {
             e.preventDefault();
-
-            // Lógica de Limite: Se NÃO é Premium E NÃO é Admin, tem limite.
+            // Lógica: Se não é Premium E não é Admin -> Limite Diário
             if (!usuario.premium && !isAdmin() && postsHoje >= LIMITE_DIARIO) {
-                alert("Limite diário atingido! Assine Premium para postar mais.");
+                alert("Limite diário atingido! Assine Premium (R$ 2,99) para continuar.");
                 abrirPremium(); return;
             }
 
@@ -446,13 +438,11 @@
             const cat = document.getElementById('catSelect').value;
             const sub = document.getElementById('subSelect').value;
 
-            if (!cat || !sub) { alert("Selecione a Categoria e a Raça."); return; }
+            if (!cat || !sub) { alert("Selecione Categoria e Raça."); return; }
             if (!isValidHttpUrl(imgUrl)) { alert("Link de imagem inválido."); return; }
 
-            // Define classe do avatar no post
             let classeAvatar = "post-avatar";
             let badgeHtml = "";
-            
             if (isAdmin()) {
                 classeAvatar += " admin-border";
                 badgeHtml = ' <span class="badge-admin">DONO</span>';
@@ -469,7 +459,7 @@
             novoPost.innerHTML = `
                 <div class="post-header">
                     <div class="post-user">
-                        <img src="${usuario.foto}" class="${classeAvatar}" alt="User">
+                        <img src="${usuario.foto}" class="${classeAvatar}">
                         <div><h4 style="margin:0;">${escapeHtml(usuario.nome)}${badgeHtml}</h4><span style="font-size:12px; color:#777;">Agora</span></div>
                     </div>
                     <button class="btn-ban" onclick="this.closest('.post').remove()">⛔ Banir</button>
@@ -477,7 +467,6 @@
                 <p>${escapeHtml(desc)}</p>
                 <span class="post-tag">${cat} &rsaquo; ${sub}</span>
                 <img src="${imgUrl}" alt="Post">
-                
                 <div class="post-comments">
                     <div class="comments-title">Comentários</div>
                     <div class="comments-list"></div>
@@ -490,19 +479,23 @@
 
             const feed = document.getElementById('feed');
             feed.prepend(novoPost);
-
+            
+            // Filtro reset
             document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('active'));
             document.querySelector('.topic-btn').classList.add('active');
             filtrarFeed('Tudo');
 
-            // Só conta posts e exibe anúncios se NÃO for Admin e NÃO for Premium
+            // Lógica de Monetização e Contador (Só para não-premium e não-admin)
             if (!usuario.premium && !isAdmin()) {
                 postsHoje++;
                 localStorage.setItem('app_qtd_posts', postsHoje);
                 localStorage.setItem('app_data_posts', new Date().toLocaleDateString());
                 
+                // Exibe anúncio a cada 10 posts criados na sessão
+                if (contadorPostsSessao % 10 === 0) {
+                    inserirAnuncio(feed);
+                }
                 contadorPostsSessao++;
-                if (contadorPostsSessao % 10 === 0) inserirAnuncio(feed);
                 atualizarLimitDisplay();
             }
 
@@ -511,51 +504,53 @@
             document.getElementById('subSelect').disabled = true;
         }
 
+        // === INSERÇÃO DE ANÚNCIO (ESTILO POST) ===
         function inserirAnuncio(feedEl) {
             let ad = document.createElement('div');
-            ad.className = 'ad-container';
-            ad.innerHTML = `<span class="ad-label">Publicidade</span><div style="background:#333;height:80px;display:flex;align-items:center;justify-content:center;color:#777;">Google Ads</div><span class="remove-ads-link" onclick="abrirPremium()">Remover anúncios</span>`;
+            // Usamos a mesma estrutura de card do post, mas com classe especifica
+            ad.className = 'card post post-ad';
+            ad.innerHTML = `
+                <div class="ad-badge">PUBLICIDADE</div>
+                <div class="ad-content">
+                    <p style="font-size:16px; color:#fff;">Espaço Patrocinado</p>
+                    <p>Anúncio do Google Adsense Aqui</p>
+                    <p style="font-size:11px; margin-top:10px;">(Você está vendo isso porque não é Premium)</p>
+                </div>
+                <div style="text-align:center; padding-top:10px; border-top:1px dashed #333;">
+                    <span class="remove-ads-link" onclick="abrirPremium()">Remover anúncios (R$ 2,99)</span>
+                </div>
+            `;
             feedEl.prepend(ad);
         }
 
         function atualizarLimitDisplay() {
             const el = document.getElementById('limitDisplay');
             if (!el) return;
-            
             if (isAdmin()) {
                 el.innerHTML = "<span style='color:var(--red); font-weight:bold;'>👑 Modo Deus (Admin)</span>";
             } else if (usuario.premium) {
-                el.innerHTML = "<span style='color:var(--green)'>💎 Posts Ilimitados</span>";
+                el.innerHTML = "<span style='color:var(--green)'>💎 Ilimitado</span>";
             } else {
                 el.innerText = `Restam ${LIMITE_DIARIO - postsHoje} posts hoje.`;
             }
         }
 
-        // === 4. COMENTÁRIOS ===
+        // === OUTROS (Comentários, Modais, Utils) ===
         const STORAGE_COMENTARIOS = 'app_comentarios';
         function obterComentarios() { try { return JSON.parse(localStorage.getItem(STORAGE_COMENTARIOS) || '{}'); } catch { return {}; } }
         function salvarComentarios(obj) { localStorage.setItem(STORAGE_COMENTARIOS, JSON.stringify(obj)); }
-
         function publicarComentario(btn) {
             const post = btn.closest('.post');
             const input = post.querySelector('.comment-input');
             const texto = input.value.trim();
             if (!texto) return;
-
             const list = post.querySelector('.comments-list');
             const item = document.createElement('div');
             item.className = 'comment-item';
-            item.innerHTML = `
-                <img class="comment-avatar" src="${usuario.foto}">
-                <div>
-                    <div class="comment-author">${escapeHtml(usuario.nome)}</div>
-                    <div class="comment-text">${escapeHtml(texto)}</div>
-                </div>
-            `;
+            item.innerHTML = `<img class="comment-avatar" src="${usuario.foto}"><div><div class="comment-author">${escapeHtml(usuario.nome)}</div><div class="comment-text">${escapeHtml(texto)}</div></div>`;
             list.appendChild(item);
             input.value = '';
         }
-
         function initComentarios() { toggleCommentForms(); }
         function toggleCommentForms() {
             const logged = !!usuario.foto;
@@ -563,23 +558,20 @@
             document.querySelectorAll('.comment-login-msg').forEach(el => el.style.display = logged ? 'none' : 'block');
         }
 
-        // === UTILITÁRIOS E MODAIS ===
         function isValidHttpUrl(s) { try { const u = new URL(s); return u.protocol === 'http:' || u.protocol === 'https:'; } catch { return false; } }
         function decodeJwt(t) { return JSON.parse(decodeURIComponent(window.atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''))); }
         function escapeHtml(s) { const d = document.createElement('div'); d.innerText = s; return d.innerHTML; }
 
         function assinarPremium() {
-            if(confirm("Confirmar assinatura Premium?")) {
+            if(confirm("Confirmar assinatura Premium por R$ 2,99?")) {
                 usuario.premium = true; localStorage.setItem('app_premium', 'true');
                 aplicarEstiloPremium(); atualizarLimitDisplay();
                 alert("Agora você é Premium! 💎"); fechar('modalPremium');
-                document.querySelectorAll('.ad-container').forEach(e => e.remove());
+                // Remove anúncios existentes na tela
+                document.querySelectorAll('.post-ad').forEach(e => e.remove());
             }
         }
-        function aplicarEstiloPremium() {
-            // Reaplica estilos no header com base no estado atual
-            aplicarEstilosEspeciais();
-        }
+        function aplicarEstiloPremium() { aplicarEstilosEspeciais(); }
         
         function salvarPerfil() {
             usuario.nome = document.getElementById('editNome').value;
@@ -588,7 +580,6 @@
             atualizarInterface(); fechar('modalPerfil');
         }
         function atualizarPreview() { document.getElementById('previewImg').src = document.getElementById('editFoto').value || usuario.foto; }
-
         function salvarIdioma(v) { localStorage.setItem('app_idioma', v); }
 
         function abrirPremium() { document.getElementById('modalPremium').classList.add('modal-open'); }

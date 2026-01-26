@@ -50,6 +50,7 @@
         .btn-premium:hover { background: var(--gold); color: black; }
         
         .premium-border { border: 2px solid var(--gold) !important; box-shadow: 0 0 5px var(--gold); }
+        .admin-border { border: 2px solid var(--red) !important; box-shadow: 0 0 5px var(--red); }
         .user-mini img { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--green); cursor: pointer; object-fit: cover; }
 
         /* --- BARRA DE NAVEGAÇÃO / TÓPICOS --- */
@@ -107,6 +108,12 @@
             font-size: 11px; background: #333; padding: 4px 8px; 
             border-radius: 4px; color: var(--green); margin-top: 5px; display: inline-block;
         }
+        
+        /* Selo Admin */
+        .badge-admin { 
+            background: var(--red); color: white; font-size: 9px; padding: 2px 6px; 
+            border-radius: 4px; margin-left: 5px; font-weight: bold; text-transform: uppercase;
+        }
 
         .btn-ban {
             background: rgba(213, 0, 0, 0.1); color: var(--red);
@@ -144,7 +151,6 @@
         .config-section { margin: 18px 0; padding-top: 18px; border-top: 1px solid var(--border); text-align: left; }
         .config-section:first-of-type { border-top: none; }
         .config-section h4 { margin: 0 0 10px; font-size: 14px; color: #888; text-transform: uppercase; }
-        .config-toggle { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         
         /* ANÚNCIO */
         .ad-container { background-color: #000; color: #555; padding: 20px; text-align: center; margin-bottom: 25px; border-radius: 8px; border: 1px dashed #444; }
@@ -203,7 +209,10 @@
                 <div class="post-header">
                     <div class="post-user">
                         <img src="https://ui-avatars.com/api/?name=Admin&background=random" class="post-avatar" alt="Admin">
-                        <div><h4 style="margin:0;">Admin</h4><span style="font-size:12px; color:#777;">Oficial</span></div>
+                        <div>
+                            <h4 style="margin:0;">Admin <span class="badge-admin">DONO</span></h4>
+                            <span style="font-size:12px; color:#777;">Oficial</span>
+                        </div>
                     </div>
                 </div>
                 <p>Use os filtros lá em cima para encontrar o animal que você gosta! 🐶🐱🦜</p>
@@ -265,17 +274,17 @@
 
             <div class="config-section">
                 <h4>Conta</h4>
-                <label class="config-toggle">
-                    <span>Sem limite de posts (Simulação)</span>
-                    <input type="checkbox" id="checkSemLimite" onchange="salvarSemLimite(this.checked)">
-                </label>
-                <button class="btn-green" style="background:var(--red); margin-top:15px;" onclick="logout()">Sair da Conta</button>
+                <p style="font-size:12px; color:#888;">ID: <span id="userIdDisplay">---</span></p>
+                <button class="btn-green" style="background:var(--red); margin-top:10px;" onclick="logout()">Sair da Conta</button>
             </div>
         </div>
     </div>
 
     <script>
-        // === DADOS DE CATEGORIAS E SUB-CATEGORIAS ===
+        // === DEFINIÇÃO DO ADMIN ===
+        // Substitua pelo seu e-mail do Google se quiser garantir
+        const ADMIN_EMAIL = "jarvismorato@gmail.com"; 
+
         const CATEGORIAS_DATA = {
             "Cães": ["Vira-lata (SRD)", "Labrador", "Poodle", "Bulldog", "Golden Retriever", "Pastor Alemão", "Shih Tzu", "Outro"],
             "Gatos": ["Vira-lata (SRD)", "Siamês", "Persa", "Maine Coon", "Sphynx", "Angorá", "Outro"],
@@ -285,12 +294,11 @@
         };
 
         const LIMITE_DIARIO = 29;
-        let usuario = { nome: "Visitante", foto: "", premium: false };
+        let usuario = { nome: "Visitante", foto: "", email: "", premium: false };
         let postsHoje = 0;
         let contadorPostsSessao = 1;
 
         window.onload = function() {
-            // Google Login
             google.accounts.id.initialize({
                 client_id: "1011026636052-883kh3h1md3m98tpvgvm5gqlie40lecc.apps.googleusercontent.com",
                 callback: handleLogin
@@ -300,7 +308,6 @@
             carregarDadosUsuario();
             inicializarCategorias();
             initComentarios();
-            if (document.getElementById('checkSemLimite')) carregarSemLimite();
         };
 
         // === 1. LÓGICA DE CATEGORIAS (Filtros e Selects) ===
@@ -309,14 +316,12 @@
             const catSelect = document.getElementById('catSelect');
 
             for (let cat in CATEGORIAS_DATA) {
-                // Cria botão na barra de navegação
                 let btn = document.createElement('button');
                 btn.className = 'topic-btn';
                 btn.innerText = cat;
                 btn.onclick = function() { filtrarFeed(cat, this); };
                 topicBar.appendChild(btn);
 
-                // Cria opção no select de publicar
                 let option = document.createElement('option');
                 option.value = cat;
                 option.innerText = cat;
@@ -328,9 +333,7 @@
             const catSelect = document.getElementById('catSelect');
             const subSelect = document.getElementById('subSelect');
             const categoriaEscolhida = catSelect.value;
-
-            subSelect.innerHTML = '<option value="">Raça/Tipo...</option>'; // Limpa
-
+            subSelect.innerHTML = '<option value="">Raça/Tipo...</option>';
             if (categoriaEscolhida && CATEGORIAS_DATA[categoriaEscolhida]) {
                 subSelect.disabled = false;
                 CATEGORIAS_DATA[categoriaEscolhida].forEach(sub => {
@@ -345,11 +348,9 @@
         }
 
         function filtrarFeed(categoria, btnClicado) {
-            // Atualiza visual dos botões
             document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('active'));
             if(btnClicado) btnClicado.classList.add('active');
 
-            // Filtra os posts
             document.querySelectorAll('.post').forEach(post => {
                 const catPost = post.getAttribute('data-cat');
                 if (categoria === 'Tudo' || catPost === categoria) {
@@ -364,22 +365,46 @@
         function carregarDadosUsuario() {
             if(localStorage.getItem('app_nome')) usuario.nome = localStorage.getItem('app_nome');
             if(localStorage.getItem('app_foto')) usuario.foto = localStorage.getItem('app_foto');
+            if(localStorage.getItem('app_email')) usuario.email = localStorage.getItem('app_email');
             if(localStorage.getItem('app_premium') === 'true') {
                 usuario.premium = true;
-                aplicarEstiloPremium();
             }
+            
+            // Verifica se é admin ao carregar
+            aplicarEstilosEspeciais();
             atualizarInterface();
         }
 
         function handleLogin(response) {
             const data = decodeJwt(response.credential);
-            if(!usuario.foto) {
-                usuario.foto = data.picture;
-                usuario.nome = data.name;
-                localStorage.setItem('app_nome', usuario.nome);
-                localStorage.setItem('app_foto', usuario.foto);
-            }
+            
+            usuario.foto = data.picture;
+            usuario.nome = data.name;
+            usuario.email = data.email; // Salva o email para verificação
+
+            localStorage.setItem('app_nome', usuario.nome);
+            localStorage.setItem('app_foto', usuario.foto);
+            localStorage.setItem('app_email', usuario.email);
+
+            aplicarEstilosEspeciais();
             atualizarInterface();
+        }
+
+        function isAdmin() {
+            // Verifica se o email logado é o do dono
+            return usuario.email === ADMIN_EMAIL;
+        }
+
+        function aplicarEstilosEspeciais() {
+            const img = document.getElementById('headerImg');
+            // Remove classes antigas
+            img.classList.remove('premium-border', 'admin-border');
+
+            if (isAdmin()) {
+                img.classList.add('admin-border'); // Borda vermelha para Admin
+            } else if (usuario.premium) {
+                img.classList.add('premium-border'); // Borda dourada para Premium
+            }
         }
 
         function atualizarInterface() {
@@ -387,15 +412,14 @@
                 document.getElementById('googleBtn').style.display = 'none';
                 document.getElementById('loggedArea').style.display = 'flex';
                 document.getElementById('headerImg').src = usuario.foto;
-                document.getElementById('postBox').style.display = 'block'; // Mostra caixa de postar
+                document.getElementById('postBox').style.display = 'block';
                 
-                // Atualiza modais
                 document.getElementById('editNome').value = usuario.nome;
                 document.getElementById('editFoto').value = usuario.foto;
                 document.getElementById('previewImg').src = usuario.foto;
+                document.getElementById('userIdDisplay').innerText = usuario.email || "---";
             }
 
-            // Atualiza limites
             let hoje = new Date().toLocaleDateString();
             if (localStorage.getItem('app_data_posts') !== hoje) {
                 postsHoje = 0;
@@ -407,16 +431,12 @@
             toggleCommentForms();
         }
 
-        function semLimiteParaMim() {
-            return localStorage.getItem('app_sem_limite') === 'true';
-        }
-
         // === 3. PUBLICAR POST ===
         function publicar(e) {
             e.preventDefault();
 
-            const semLimite = semLimiteParaMim();
-            if (!usuario.premium && !semLimite && postsHoje >= LIMITE_DIARIO) {
+            // Lógica de Limite: Se NÃO é Premium E NÃO é Admin, tem limite.
+            if (!usuario.premium && !isAdmin() && postsHoje >= LIMITE_DIARIO) {
                 alert("Limite diário atingido! Assine Premium para postar mais.");
                 abrirPremium(); return;
             }
@@ -429,19 +449,28 @@
             if (!cat || !sub) { alert("Selecione a Categoria e a Raça."); return; }
             if (!isValidHttpUrl(imgUrl)) { alert("Link de imagem inválido."); return; }
 
-            const classeAvatar = usuario.premium ? "post-avatar premium-border" : "post-avatar";
-            const postId = 'post-' + Date.now();
+            // Define classe do avatar no post
+            let classeAvatar = "post-avatar";
+            let badgeHtml = "";
+            
+            if (isAdmin()) {
+                classeAvatar += " admin-border";
+                badgeHtml = ' <span class="badge-admin">DONO</span>';
+            } else if (usuario.premium) {
+                classeAvatar += " premium-border";
+            }
 
+            const postId = 'post-' + Date.now();
             const novoPost = document.createElement('div');
             novoPost.className = 'card post';
-            novoPost.setAttribute('data-cat', cat); // Importante para o filtro
+            novoPost.setAttribute('data-cat', cat);
             novoPost.setAttribute('data-post-id', postId);
 
             novoPost.innerHTML = `
                 <div class="post-header">
                     <div class="post-user">
                         <img src="${usuario.foto}" class="${classeAvatar}" alt="User">
-                        <div><h4 style="margin:0;">${escapeHtml(usuario.nome)}</h4><span style="font-size:12px; color:#777;">Agora</span></div>
+                        <div><h4 style="margin:0;">${escapeHtml(usuario.nome)}${badgeHtml}</h4><span style="font-size:12px; color:#777;">Agora</span></div>
                     </div>
                     <button class="btn-ban" onclick="this.closest('.post').remove()">⛔ Banir</button>
                 </div>
@@ -462,13 +491,12 @@
             const feed = document.getElementById('feed');
             feed.prepend(novoPost);
 
-            // Reseta filtro para ver o post novo
             document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('active'));
             document.querySelector('.topic-btn').classList.add('active');
             filtrarFeed('Tudo');
 
-            // Atualiza contadores e anúncios
-            if (!usuario.premium && !semLimite) {
+            // Só conta posts e exibe anúncios se NÃO for Admin e NÃO for Premium
+            if (!usuario.premium && !isAdmin()) {
                 postsHoje++;
                 localStorage.setItem('app_qtd_posts', postsHoje);
                 localStorage.setItem('app_data_posts', new Date().toLocaleDateString());
@@ -478,7 +506,6 @@
                 atualizarLimitDisplay();
             }
 
-            // Limpa form
             e.target.reset();
             document.getElementById('subSelect').innerHTML = '<option value="">Raça/Tipo...</option>';
             document.getElementById('subSelect').disabled = true;
@@ -494,8 +521,14 @@
         function atualizarLimitDisplay() {
             const el = document.getElementById('limitDisplay');
             if (!el) return;
-            if (usuario.premium || semLimiteParaMim()) el.innerHTML = "<span style='color:var(--green)'>Posts Ilimitados</span>";
-            else el.innerText = `Restam ${LIMITE_DIARIO - postsHoje} posts hoje.`;
+            
+            if (isAdmin()) {
+                el.innerHTML = "<span style='color:var(--red); font-weight:bold;'>👑 Modo Deus (Admin)</span>";
+            } else if (usuario.premium) {
+                el.innerHTML = "<span style='color:var(--green)'>💎 Posts Ilimitados</span>";
+            } else {
+                el.innerText = `Restam ${LIMITE_DIARIO - postsHoje} posts hoje.`;
+            }
         }
 
         // === 4. COMENTÁRIOS ===
@@ -544,9 +577,8 @@
             }
         }
         function aplicarEstiloPremium() {
-            document.getElementById('headerImg').classList.add('premium-border');
-            document.querySelector('.btn-premium').style.background = 'var(--gold)';
-            document.querySelector('.btn-premium').style.color = 'black';
+            // Reaplica estilos no header com base no estado atual
+            aplicarEstilosEspeciais();
         }
         
         function salvarPerfil() {
@@ -558,11 +590,9 @@
         function atualizarPreview() { document.getElementById('previewImg').src = document.getElementById('editFoto').value || usuario.foto; }
 
         function salvarIdioma(v) { localStorage.setItem('app_idioma', v); }
-        function carregarSemLimite() { document.getElementById('checkSemLimite').checked = localStorage.getItem('app_sem_limite') === 'true'; }
-        function salvarSemLimite(checked) { localStorage.setItem('app_sem_limite', checked); atualizarLimitDisplay(); }
 
         function abrirPremium() { document.getElementById('modalPremium').classList.add('modal-open'); }
-        function abrirConfig() { document.getElementById('modalConfig').classList.add('modal-open'); carregarSemLimite(); }
+        function abrirConfig() { document.getElementById('modalConfig').classList.add('modal-open'); }
         function abrirPerfil() { document.getElementById('modalPerfil').classList.add('modal-open'); }
         function fechar(id) { document.getElementById(id).classList.remove('modal-open'); }
         function logout() { localStorage.clear(); location.reload(); }

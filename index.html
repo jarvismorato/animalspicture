@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Animals Picture: A rede social dos animais.">
+    <meta name="theme-color" content="#121212">
+    <title>Animals Picture - Social</title>
+    
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <style>
+        /* === TEMA ESCURO (BASE) === */
+        :root {
+            --bg: #121212; --card: #1e1e1e; --text: #e0e0e0;
+            --border: #333; --green: #00C853; --red: #D50000; --gold: #FFD700;
+            --active-topic: #2e7d32;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif; background-color: var(--bg);
+            color: var(--text); margin: 0; padding: 0;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        /* HEADER */
+        header {
+            width: 100%; height: 70px; background: var(--card);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; box-sizing: border-box;
+            border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100;
+        }
+        .logo { font-size: 22px; font-weight: 800; color: var(--green); margin: 0; }
+        .logo span { color: #fff; }
+
+        .header-actions { display: flex; align-items: center; gap: 12px; }
+
+        /* BOTÕES DO HEADER */
+        .btn-icon {
+            background: transparent; border: 1px solid var(--border); color: var(--text);
+            width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 18px;
+            transition: 0.2s; flex-shrink: 0;
+        }
+        .btn-icon:hover { background: #333; border-color: var(--green); }
+        
+        .btn-premium {
+            background: rgba(255, 215, 0, 0.1); border: 1px solid var(--gold); color: var(--gold);
+        }
+        .btn-premium:hover { background: var(--gold); color: black; }
+        
+        .premium-border { border: 2px solid var(--gold) !important; box-shadow: 0 0 5px var(--gold); }
+        .user-mini img { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--green); cursor: pointer; object-fit: cover; }
+
+        /* --- BARRA DE NAVEGAÇÃO / TÓPICOS --- */
+        .topic-bar {
+            width: 100%; background: var(--bg); 
+            border-bottom: 1px solid var(--border);
+            display: flex; gap: 10px; padding: 12px 15px; box-sizing: border-box;
+            overflow-x: auto; white-space: nowrap;
+            position: sticky; top: 70px; z-index: 90;
+            -webkit-overflow-scrolling: touch;
+        }
+        .topic-bar::-webkit-scrollbar { height: 0px; }
+
+        .topic-btn {
+            background: var(--card); border: 1px solid var(--border); color: #aaa;
+            padding: 8px 18px; border-radius: 20px; font-size: 14px; cursor: pointer;
+            transition: 0.2s; flex-shrink: 0;
+        }
+        .topic-btn:hover { background: #333; color: white; }
+        .topic-btn.active {
+            background: var(--green); color: white; border-color: var(--green); font-weight: bold;
+        }
+
+        /* CORPO PRINCIPAL */
+        main { width: 100%; max-width: 680px; padding: 20px 12px; padding-bottom: 90px; }
+
+        .card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 12px; padding: 20px; margin-bottom: 25px;
+        }
+
+        /* FORMULÁRIOS & INPUTS */
+        input, textarea, select {
+            width: 100%; background: #2c2c2c; border: 1px solid var(--border);
+            color: white; padding: 12px; border-radius: 8px; margin: 8px 0;
+            box-sizing: border-box; font-family: inherit;
+        }
+        .select-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        .select-row select { margin: 0; }
+        
+        .btn-green {
+            width: 100%; background: var(--green); color: white; border: none;
+            padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;
+            font-size: 16px; margin-top: 10px;
+        }
+        .btn-green:hover { filter: brightness(1.1); }
+
+        /* POSTS */
+        .post img { width: 100%; border-radius: 10px; margin-top: 10px; object-fit: cover; }
+        .post-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .post-user { display: flex; align-items: center; gap: 10px; }
+        .post-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        
+        .post-tag {
+            font-size: 11px; background: #333; padding: 4px 8px; 
+            border-radius: 4px; color: var(--green); margin-top: 5px; display: inline-block;
+        }
+
+        .btn-ban {
+            background: rgba(213, 0, 0, 0.1); color: var(--red);
+            border: 1px solid var(--red); padding: 5px 10px; border-radius: 4px; 
+            cursor: pointer; font-size: 11px; font-weight: bold;
+        }
+        .banned-user { opacity: 0.5; pointer-events: none; filter: grayscale(1); }
+
+        /* COMENTÁRIOS */
+        .post-comments { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+        .comments-title { font-size: 13px; color: #888; margin-bottom: 10px; }
+        .comment-item { display: flex; gap: 10px; margin-bottom: 12px; align-items: flex-start; }
+        .comment-avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; object-fit: cover; }
+        .comment-author { font-size: 13px; font-weight: 600; color: var(--text); }
+        .comment-text { font-size: 14px; color: #b0b0b0; line-height: 1.35; }
+        .comment-form { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+        .btn-comment { background: var(--green); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+        /* MODAIS */
+        .modal-bg {
+            display: none; position: fixed; inset: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 9999; backdrop-filter: blur(5px);
+            align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;
+        }
+        .modal-bg.modal-open { display: flex !important; }
+        .modal-box {
+            background: var(--card); width: 90%; max-width: 450px; padding: 25px;
+            border-radius: 16px; border: 1px solid var(--border); position: relative; text-align: center;
+        }
+        .close-btn { position: absolute; top: 12px; right: 16px; cursor: pointer; font-size: 24px; color: #888; background: none; border: none; }
+        
+        .plan-card { border: 2px solid var(--gold); background: rgba(255, 215, 0, 0.05); padding: 20px; border-radius: 12px; margin: 20px 0; }
+        
+        /* CONFIGURAÇÕES */
+        .config-section { margin: 18px 0; padding-top: 18px; border-top: 1px solid var(--border); text-align: left; }
+        .config-section:first-of-type { border-top: none; }
+        .config-section h4 { margin: 0 0 10px; font-size: 14px; color: #888; text-transform: uppercase; }
+        .config-toggle { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        
+        /* ANÚNCIO */
+        .ad-container { background-color: #000; color: #555; padding: 20px; text-align: center; margin-bottom: 25px; border-radius: 8px; border: 1px dashed #444; }
+        .remove-ads-link { display: block; margin-top: 10px; color: var(--gold); font-size: 12px; cursor: pointer; text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 class="logo">Animals <span>Picture</span></h1>
+        <div class="header-actions">
+            <button class="btn-icon btn-premium" onclick="abrirPremium()" title="Seja Premium">💎</button>
+            <button class="btn-icon" onclick="abrirConfig()" title="Configurações">⚙️</button>
+            
+            <div id="googleBtn"></div>
+            <div class="user-mini" id="loggedArea" onclick="abrirPerfil()" style="display:none;">
+                <img id="headerImg" src="" alt="Perfil">
+            </div>
+        </div>
+    </header>
+
+    <nav id="topicBar" class="topic-bar">
+        <button class="topic-btn active" onclick="filtrarFeed('Tudo', this)">Tudo</button>
+        </nav>
+
+    <main>
+        <div id="postBox" class="card" style="display:none;">
+            <h3 style="margin-top:0;">Nova Publicação 🐾</h3>
+            <form onsubmit="publicar(event)">
+                <textarea id="descPost" rows="2" placeholder="Escreva algo sobre o animal..." required maxlength="280"></textarea>
+                
+                <div class="select-row">
+                    <select id="catSelect" required onchange="carregarSubcategorias()">
+                        <option value="">Escolha a Categoria...</option>
+                    </select>
+                    <select id="subSelect" disabled required>
+                        <option value="">Raça/Tipo...</option>
+                    </select>
+                </div>
+
+                <input type="url" id="imgUrlPost" placeholder="Cole o link da imagem (URL)..." required>
+                
+                <div style="font-size: 12px; color: #888; margin: 10px 0;">
+                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                        <input type="checkbox" required> Confirmo que é uma foto de animal.
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn-green">Publicar Foto</button>
+                <div id="limitDisplay" style="font-size:11px; color:#888; text-align:center; margin-top:8px;"></div>
+            </form>
+        </div>
+
+        <div id="feed">
+            <div class="card post" data-cat="Admin" data-post-id="admin-1">
+                <div class="post-header">
+                    <div class="post-user">
+                        <img src="https://ui-avatars.com/api/?name=Admin&background=random" class="post-avatar" alt="Admin">
+                        <div><h4 style="margin:0;">Admin</h4><span style="font-size:12px; color:#777;">Oficial</span></div>
+                    </div>
+                </div>
+                <p>Use os filtros lá em cima para encontrar o animal que você gosta! 🐶🐱🦜</p>
+                <span class="post-tag">Sistema - Novidade</span>
+                <img src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=600&q=80" alt="Exemplo">
+                
+                <div class="post-comments">
+                    <div class="comments-title">Comentários</div>
+                    <div class="comments-list"></div>
+                    <div class="comment-login-msg">Faça login para comentar.</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="modalPremium" class="modal-bg" onclick="if(event.target===this)fechar('modalPremium')">
+        <div class="modal-box">
+            <button class="close-btn" onclick="fechar('modalPremium')">&times;</button>
+            <h2 style="color:var(--gold);">Seja Premium 💎</h2>
+            <div class="plan-card">
+                <div>Plano Ilimitado</div>
+                <div style="font-size:28px; color:var(--gold); font-weight:bold;">R$ 19,90</div>
+                <ul style="text-align:left; font-size:14px; color:#aaa; list-style:none; padding:0;">
+                    <li>✅ Postagens Ilimitadas</li>
+                    <li>✅ Zero Anúncios</li>
+                    <li>✅ Destaque Dourado</li>
+                </ul>
+            </div>
+            <button class="btn-green" style="background:var(--gold); color:black;" onclick="assinarPremium()">Assinar Agora</button>
+        </div>
+    </div>
+
+    <div id="modalPerfil" class="modal-bg" onclick="if(event.target===this)fechar('modalPerfil')">
+        <div class="modal-box">
+            <button class="close-btn" onclick="fechar('modalPerfil')">&times;</button>
+            <h3>Meu Perfil</h3>
+            <img id="previewImg" src="" style="width:80px; height:80px; border-radius:50%; margin:15px auto; display:block; object-fit:cover;">
+            <input type="text" id="editNome" placeholder="Seu Nome">
+            <input type="text" id="editFoto" placeholder="URL da Foto" oninput="atualizarPreview()">
+            <button class="btn-green" onclick="salvarPerfil()">Salvar Alterações</button>
+        </div>
+    </div>
+
+    <div id="modalConfig" class="modal-bg" onclick="if(event.target===this)fechar('modalConfig')">
+        <div class="modal-box">
+            <button class="close-btn" onclick="fechar('modalConfig')">&times;</button>
+            <h3>Configurações</h3>
+
+            <div class="config-section">
+                <h4>Preferências</h4>
+                <div style="margin-bottom:10px;">
+                    <label>Idioma</label>
+                    <select id="selectIdioma" onchange="salvarIdioma(this.value)">
+                        <option value="pt-BR">Português</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h4>Conta</h4>
+                <label class="config-toggle">
+                    <span>Sem limite de posts (Simulação)</span>
+                    <input type="checkbox" id="checkSemLimite" onchange="salvarSemLimite(this.checked)">
+                </label>
+                <button class="btn-green" style="background:var(--red); margin-top:15px;" onclick="logout()">Sair da Conta</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === DADOS DE CATEGORIAS E SUB-CATEGORIAS ===
+        const CATEGORIAS_DATA = {
+            "Cães": ["Vira-lata (SRD)", "Labrador", "Poodle", "Bulldog", "Golden Retriever", "Pastor Alemão", "Shih Tzu", "Outro"],
+            "Gatos": ["Vira-lata (SRD)", "Siamês", "Persa", "Maine Coon", "Sphynx", "Angorá", "Outro"],
+            "Pássaros": ["Calopsita", "Canário", "Papagaio", "Periquito", "Outro"],
+            "Roedores": ["Hamster", "Porquinho da Índia", "Chinchila", "Coelho", "Outro"],
+            "Outros": ["Cavalo", "Peixes", "Répteis", "Animais de Fazenda", "Exótico"]
+        };
+
+        const LIMITE_DIARIO = 29;
+        let usuario = { nome: "Visitante", foto: "", premium: false };
+        let postsHoje = 0;
+        let contadorPostsSessao = 1;
+
+        window.onload = function() {
+            // Google Login
+            google.accounts.id.initialize({
+                client_id: "1011026636052-883kh3h1md3m98tpvgvm5gqlie40lecc.apps.googleusercontent.com",
+                callback: handleLogin
+            });
+            google.accounts.id.renderButton(document.getElementById("googleBtn"), { theme: "outline", size: "large", type: "icon" });
+
+            carregarDadosUsuario();
+            inicializarCategorias();
+            initComentarios();
+            if (document.getElementById('checkSemLimite')) carregarSemLimite();
+        };
+
+        // === 1. LÓGICA DE CATEGORIAS (Filtros e Selects) ===
+        function inicializarCategorias() {
+            const topicBar = document.getElementById('topicBar');
+            const catSelect = document.getElementById('catSelect');
+
+            for (let cat in CATEGORIAS_DATA) {
+                // Cria botão na barra de navegação
+                let btn = document.createElement('button');
+                btn.className = 'topic-btn';
+                btn.innerText = cat;
+                btn.onclick = function() { filtrarFeed(cat, this); };
+                topicBar.appendChild(btn);
+
+                // Cria opção no select de publicar
+                let option = document.createElement('option');
+                option.value = cat;
+                option.innerText = cat;
+                catSelect.appendChild(option);
+            }
+        }
+
+        function carregarSubcategorias() {
+            const catSelect = document.getElementById('catSelect');
+            const subSelect = document.getElementById('subSelect');
+            const categoriaEscolhida = catSelect.value;
+
+            subSelect.innerHTML = '<option value="">Raça/Tipo...</option>'; // Limpa
+
+            if (categoriaEscolhida && CATEGORIAS_DATA[categoriaEscolhida]) {
+                subSelect.disabled = false;
+                CATEGORIAS_DATA[categoriaEscolhida].forEach(sub => {
+                    let opt = document.createElement('option');
+                    opt.value = sub;
+                    opt.innerText = sub;
+                    subSelect.appendChild(opt);
+                });
+            } else {
+                subSelect.disabled = true;
+            }
+        }
+
+        function filtrarFeed(categoria, btnClicado) {
+            // Atualiza visual dos botões
+            document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('active'));
+            if(btnClicado) btnClicado.classList.add('active');
+
+            // Filtra os posts
+            document.querySelectorAll('.post').forEach(post => {
+                const catPost = post.getAttribute('data-cat');
+                if (categoria === 'Tudo' || catPost === categoria) {
+                    post.style.display = 'block';
+                } else {
+                    post.style.display = 'none';
+                }
+            });
+        }
+
+        // === 2. LÓGICA DE LOGIN E USUÁRIO ===
+        function carregarDadosUsuario() {
+            if(localStorage.getItem('app_nome')) usuario.nome = localStorage.getItem('app_nome');
+            if(localStorage.getItem('app_foto')) usuario.foto = localStorage.getItem('app_foto');
+            if(localStorage.getItem('app_premium') === 'true') {
+                usuario.premium = true;
+                aplicarEstiloPremium();
+            }
+            atualizarInterface();
+        }
+
+        function handleLogin(response) {
+            const data = decodeJwt(response.credential);
+            if(!usuario.foto) {
+                usuario.foto = data.picture;
+                usuario.nome = data.name;
+                localStorage.setItem('app_nome', usuario.nome);
+                localStorage.setItem('app_foto', usuario.foto);
+            }
+            atualizarInterface();
+        }
+
+        function atualizarInterface() {
+            if (usuario.foto) {
+                document.getElementById('googleBtn').style.display = 'none';
+                document.getElementById('loggedArea').style.display = 'flex';
+                document.getElementById('headerImg').src = usuario.foto;
+                document.getElementById('postBox').style.display = 'block'; // Mostra caixa de postar
+                
+                // Atualiza modais
+                document.getElementById('editNome').value = usuario.nome;
+                document.getElementById('editFoto').value = usuario.foto;
+                document.getElementById('previewImg').src = usuario.foto;
+            }
+
+            // Atualiza limites
+            let hoje = new Date().toLocaleDateString();
+            if (localStorage.getItem('app_data_posts') !== hoje) {
+                postsHoje = 0;
+                localStorage.setItem('app_data_posts', hoje);
+            } else {
+                postsHoje = parseInt(localStorage.getItem('app_qtd_posts') || 0);
+            }
+            atualizarLimitDisplay();
+            toggleCommentForms();
+        }
+
+        function semLimiteParaMim() {
+            return localStorage.getItem('app_sem_limite') === 'true';
+        }
+
+        // === 3. PUBLICAR POST ===
+        function publicar(e) {
+            e.preventDefault();
+
+            const semLimite = semLimiteParaMim();
+            if (!usuario.premium && !semLimite && postsHoje >= LIMITE_DIARIO) {
+                alert("Limite diário atingido! Assine Premium para postar mais.");
+                abrirPremium(); return;
+            }
+
+            const desc = document.getElementById('descPost').value;
+            const imgUrl = document.getElementById('imgUrlPost').value;
+            const cat = document.getElementById('catSelect').value;
+            const sub = document.getElementById('subSelect').value;
+
+            if (!cat || !sub) { alert("Selecione a Categoria e a Raça."); return; }
+            if (!isValidHttpUrl(imgUrl)) { alert("Link de imagem inválido."); return; }
+
+            const classeAvatar = usuario.premium ? "post-avatar premium-border" : "post-avatar";
+            const postId = 'post-' + Date.now();
+
+            const novoPost = document.createElement('div');
+            novoPost.className = 'card post';
+            novoPost.setAttribute('data-cat', cat); // Importante para o filtro
+            novoPost.setAttribute('data-post-id', postId);
+
+            novoPost.innerHTML = `
+                <div class="post-header">
+                    <div class="post-user">
+                        <img src="${usuario.foto}" class="${classeAvatar}" alt="User">
+                        <div><h4 style="margin:0;">${escapeHtml(usuario.nome)}</h4><span style="font-size:12px; color:#777;">Agora</span></div>
+                    </div>
+                    <button class="btn-ban" onclick="this.closest('.post').remove()">⛔ Banir</button>
+                </div>
+                <p>${escapeHtml(desc)}</p>
+                <span class="post-tag">${cat} &rsaquo; ${sub}</span>
+                <img src="${imgUrl}" alt="Post">
+                
+                <div class="post-comments">
+                    <div class="comments-title">Comentários</div>
+                    <div class="comments-list"></div>
+                    <div class="comment-form comment-form-logged" style="display:flex;">
+                        <input type="text" class="comment-input" placeholder="Comente algo..." maxlength="280">
+                        <button type="button" class="btn-comment" onclick="publicarComentario(this)">Enviar</button>
+                    </div>
+                </div>
+            `;
+
+            const feed = document.getElementById('feed');
+            feed.prepend(novoPost);
+
+            // Reseta filtro para ver o post novo
+            document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector('.topic-btn').classList.add('active');
+            filtrarFeed('Tudo');
+
+            // Atualiza contadores e anúncios
+            if (!usuario.premium && !semLimite) {
+                postsHoje++;
+                localStorage.setItem('app_qtd_posts', postsHoje);
+                localStorage.setItem('app_data_posts', new Date().toLocaleDateString());
+                
+                contadorPostsSessao++;
+                if (contadorPostsSessao % 10 === 0) inserirAnuncio(feed);
+                atualizarLimitDisplay();
+            }
+
+            // Limpa form
+            e.target.reset();
+            document.getElementById('subSelect').innerHTML = '<option value="">Raça/Tipo...</option>';
+            document.getElementById('subSelect').disabled = true;
+        }
+
+        function inserirAnuncio(feedEl) {
+            let ad = document.createElement('div');
+            ad.className = 'ad-container';
+            ad.innerHTML = `<span class="ad-label">Publicidade</span><div style="background:#333;height:80px;display:flex;align-items:center;justify-content:center;color:#777;">Google Ads</div><span class="remove-ads-link" onclick="abrirPremium()">Remover anúncios</span>`;
+            feedEl.prepend(ad);
+        }
+
+        function atualizarLimitDisplay() {
+            const el = document.getElementById('limitDisplay');
+            if (!el) return;
+            if (usuario.premium || semLimiteParaMim()) el.innerHTML = "<span style='color:var(--green)'>Posts Ilimitados</span>";
+            else el.innerText = `Restam ${LIMITE_DIARIO - postsHoje} posts hoje.`;
+        }
+
+        // === 4. COMENTÁRIOS ===
+        const STORAGE_COMENTARIOS = 'app_comentarios';
+        function obterComentarios() { try { return JSON.parse(localStorage.getItem(STORAGE_COMENTARIOS) || '{}'); } catch { return {}; } }
+        function salvarComentarios(obj) { localStorage.setItem(STORAGE_COMENTARIOS, JSON.stringify(obj)); }
+
+        function publicarComentario(btn) {
+            const post = btn.closest('.post');
+            const input = post.querySelector('.comment-input');
+            const texto = input.value.trim();
+            if (!texto) return;
+
+            const list = post.querySelector('.comments-list');
+            const item = document.createElement('div');
+            item.className = 'comment-item';
+            item.innerHTML = `
+                <img class="comment-avatar" src="${usuario.foto}">
+                <div>
+                    <div class="comment-author">${escapeHtml(usuario.nome)}</div>
+                    <div class="comment-text">${escapeHtml(texto)}</div>
+                </div>
+            `;
+            list.appendChild(item);
+            input.value = '';
+        }
+
+        function initComentarios() { toggleCommentForms(); }
+        function toggleCommentForms() {
+            const logged = !!usuario.foto;
+            document.querySelectorAll('.comment-form-logged').forEach(el => el.style.display = logged ? 'flex' : 'none');
+            document.querySelectorAll('.comment-login-msg').forEach(el => el.style.display = logged ? 'none' : 'block');
+        }
+
+        // === UTILITÁRIOS E MODAIS ===
+        function isValidHttpUrl(s) { try { const u = new URL(s); return u.protocol === 'http:' || u.protocol === 'https:'; } catch { return false; } }
+        function decodeJwt(t) { return JSON.parse(decodeURIComponent(window.atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''))); }
+        function escapeHtml(s) { const d = document.createElement('div'); d.innerText = s; return d.innerHTML; }
+
+        function assinarPremium() {
+            if(confirm("Confirmar assinatura Premium?")) {
+                usuario.premium = true; localStorage.setItem('app_premium', 'true');
+                aplicarEstiloPremium(); atualizarLimitDisplay();
+                alert("Agora você é Premium! 💎"); fechar('modalPremium');
+                document.querySelectorAll('.ad-container').forEach(e => e.remove());
+            }
+        }
+        function aplicarEstiloPremium() {
+            document.getElementById('headerImg').classList.add('premium-border');
+            document.querySelector('.btn-premium').style.background = 'var(--gold)';
+            document.querySelector('.btn-premium').style.color = 'black';
+        }
+        
+        function salvarPerfil() {
+            usuario.nome = document.getElementById('editNome').value;
+            usuario.foto = document.getElementById('editFoto').value;
+            localStorage.setItem('app_nome', usuario.nome); localStorage.setItem('app_foto', usuario.foto);
+            atualizarInterface(); fechar('modalPerfil');
+        }
+        function atualizarPreview() { document.getElementById('previewImg').src = document.getElementById('editFoto').value || usuario.foto; }
+
+        function salvarIdioma(v) { localStorage.setItem('app_idioma', v); }
+        function carregarSemLimite() { document.getElementById('checkSemLimite').checked = localStorage.getItem('app_sem_limite') === 'true'; }
+        function salvarSemLimite(checked) { localStorage.setItem('app_sem_limite', checked); atualizarLimitDisplay(); }
+
+        function abrirPremium() { document.getElementById('modalPremium').classList.add('modal-open'); }
+        function abrirConfig() { document.getElementById('modalConfig').classList.add('modal-open'); carregarSemLimite(); }
+        function abrirPerfil() { document.getElementById('modalPerfil').classList.add('modal-open'); }
+        function fechar(id) { document.getElementById(id).classList.remove('modal-open'); }
+        function logout() { localStorage.clear(); location.reload(); }
+    </script>
+</body>
+</html>

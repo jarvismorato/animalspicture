@@ -3,23 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Animals Picture</title>
-    <meta name="description" content="A rede social dos animais.">
+    <title>Animals Picture - Local</title>
+    <meta name="description" content="Rede social local.">
     <meta name="theme-color" content="#121212">
     
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6566744182494017" crossorigin="anonymous"></script>
 
     <style>
-        /* === TEMA ESCURO === */
+        /* === TEMA E ESTILOS === */
         :root {
             --bg: #121212; --card: #1e1e1e; --text: #e0e0e0;
             --border: #333; --green: #00C853; --red: #D50000; --gold: #FFD700;
         }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; }
         
-        /* HEADER */
         header { width: 100%; height: 70px; background: var(--card); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-sizing: border-box; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
         .logo { font-size: 22px; font-weight: 800; color: var(--green); margin: 0; }
         .logo span { color: #fff; }
@@ -27,41 +25,28 @@
 
         .btn-icon { background: transparent; border: 1px solid var(--border); color: var(--text); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: 0.2s; }
         .btn-icon:hover { background: #333; border-color: var(--green); }
-        .btn-premium { background: rgba(255, 215, 0, 0.1); border-color: var(--gold); color: var(--gold); }
+        .btn-premium { border-color: var(--gold); color: var(--gold); background: rgba(255, 215, 0, 0.1); }
         .user-mini img { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--green); cursor: pointer; object-fit: cover; }
-        .premium-border { border: 2px solid var(--gold) !important; box-shadow: 0 0 5px var(--gold); }
-        .admin-border { border: 2px solid var(--red) !important; box-shadow: 0 0 5px var(--red); }
-
-        /* NAVEGAÇÃO */
+        
         .topic-bar { width: 100%; background: var(--bg); border-bottom: 1px solid var(--border); display: flex; gap: 10px; padding: 12px; overflow-x: auto; position: sticky; top: 70px; z-index: 90; }
-        .topic-btn { background: var(--card); border: 1px solid var(--border); color: #aaa; padding: 8px 18px; border-radius: 20px; cursor: pointer; white-space: nowrap; }
+        .topic-btn { background: var(--card); border: 1px solid var(--border); color: #aaa; padding: 8px 18px; border-radius: 20px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
         .topic-btn.active { background: var(--green); color: white; border-color: var(--green); }
 
-        /* MAIN & CARDS */
         main { width: 100%; max-width: 600px; padding: 20px 10px; padding-bottom: 80px; }
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 25px; }
         
         input, textarea, select { width: 100%; background: #2c2c2c; border: 1px solid var(--border); color: white; padding: 12px; border-radius: 8px; margin: 8px 0; box-sizing: border-box; }
         .btn-green { width: 100%; background: var(--green); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
         
-        /* UPLOAD DE IMAGEM */
-        .file-upload-label {
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            background: #2c2c2c; border: 1px dashed #666; padding: 15px;
-            border-radius: 8px; cursor: pointer; color: #aaa; font-size: 14px;
-            transition: 0.2s; margin: 10px 0;
-        }
-        .file-upload-label:hover { background: #333; border-color: var(--green); color: white; }
+        .file-upload-label { display: flex; align-items: center; justify-content: center; gap: 10px; background: #2c2c2c; border: 1px dashed #666; padding: 15px; border-radius: 8px; cursor: pointer; color: #aaa; font-size: 14px; margin: 10px 0; }
         #previewUpload { width: 100%; border-radius: 8px; margin-top: 10px; display: none; object-fit: contain; max-height: 300px; }
 
-        /* POSTS */
         .post img { width: 100%; border-radius: 10px; margin-top: 10px; }
         .post-header { display: flex; align-items: center; justify-content: space-between; }
         .post-user { display: flex; align-items: center; gap: 10px; }
         .post-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
         .badge-admin { background: var(--red); color: white; font-size: 9px; padding: 2px 6px; border-radius: 4px; margin-left: 5px; font-weight: bold; }
         
-        /* COMENTÁRIOS */
         .post-comments { margin-top: 15px; border-top: 1px solid #333; padding-top: 10px; }
         .comment-item { display: flex; gap: 10px; margin-bottom: 10px; }
         .comment-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
@@ -69,15 +54,15 @@
         .comment-form { display: flex; gap: 8px; margin-top: 10px; }
         .btn-comment { background: var(--green); border: none; color: white; border-radius: 8px; padding: 0 15px; cursor: pointer; }
 
-        /* ADS & MODAIS */
-        .post-ad { border: 2px dashed #444; background: #000; text-align: center; }
         .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; }
         .modal-bg.open { display: flex; }
-        .modal-box { background: var(--card); width: 90%; max-width: 400px; padding: 25px; border-radius: 16px; border: 1px solid var(--border); position: relative; }
+        .modal-box { background: var(--card); width: 90%; max-width: 400px; padding: 25px; border-radius: 16px; border: 1px solid var(--border); position: relative; max-height: 80vh; overflow-y: auto; }
         .close-btn { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: #888; }
         
         .config-section { border-top: 1px solid #333; margin-top: 15px; padding-top: 15px; }
-        .config-link { color: var(--green); text-decoration: none; }
+        .premium-border { border: 2px solid var(--gold) !important; }
+        .admin-border { border: 2px solid var(--red) !important; }
+        .post-ad { border: 2px dashed #444; background: #000; text-align: center; }
     </style>
 </head>
 <body>
@@ -85,8 +70,8 @@
     <header>
         <div class="logo">Animals <span>Picture</span></div>
         <div class="header-actions">
-            <button class="btn-icon btn-premium" onclick="abrirModal('modalPremium')" title="Premium">💎</button>
-            <button class="btn-icon" onclick="abrirModal('modalConfig')" title="Config">⚙️</button>
+            <button class="btn-icon btn-premium" onclick="abrirModal('modalPremium')">💎</button>
+            <button class="btn-icon" onclick="abrirModal('modalConfig')">⚙️</button>
             <div id="googleBtn"></div>
             <div class="user-mini" id="loggedArea" onclick="abrirModal('modalPerfil')" style="display:none;">
                 <img id="headerImg" src="" alt="Eu">
@@ -95,14 +80,14 @@
     </header>
 
     <nav id="topicBar" class="topic-bar">
-        <button class="topic-btn active" onclick="filtrarFeed('Tudo', this)" data-i18n="all">Tudo</button>
+        <button class="topic-btn active" onclick="filtrarFeed('Tudo', this)">Tudo</button>
     </nav>
 
     <main>
         <div id="postBox" class="card" style="display:none;">
-            <h3 data-i18n="newPost">Nova Publicação 🐾</h3>
+            <h3>Nova Publicação 🐾</h3>
             <form onsubmit="publicar(event)">
-                <textarea id="descPost" rows="2" required></textarea>
+                <textarea id="descPost" rows="2" placeholder="Escreva algo..." required></textarea>
                 
                 <div style="display:flex; gap:10px; margin:10px 0;">
                     <select id="catSelect" required onchange="carregarSub()"><option value="">Categoria...</option></select>
@@ -111,11 +96,12 @@
 
                 <label class="file-upload-label">
                     <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="lerArquivo(this)">
-                    <span>📷 Tirar Foto ou Escolher Arquivo</span>
+                    <span>📷 Câmera / Galeria</span>
                 </label>
-                
                 <img id="previewUpload" src="">
-                <input type="hidden" id="finalImageBase64"> <button class="btn-green" data-i18n="publishBtn">Publicar</button>
+                <input type="hidden" id="finalImageBase64">
+
+                <button class="btn-green">Publicar</button>
                 <div id="limitDisplay" style="font-size:12px; color:#888; margin-top:5px; text-align:center;"></div>
             </form>
         </div>
@@ -128,82 +114,72 @@
             <span class="close-btn" onclick="fecharModal('modalPremium')">&times;</span>
             <h2 style="color:var(--gold)">Premium 💎</h2>
             <p>R$ 2,99 / mês</p>
-            <ul style="text-align:left; color:#aaa;">
-                <li data-i18n="feat1">Posts Ilimitados</li>
-                <li data-i18n="feat2">Zero Anúncios</li>
-            </ul>
-            <button class="btn-green" style="background:var(--gold); color:black;" onclick="assinarPremium()">Assinar</button>
+            <button class="btn-green" style="background:var(--gold); color:black;" onclick="assinarPremium()">Assinar Agora</button>
         </div>
     </div>
 
     <div id="modalPerfil" class="modal-bg">
         <div class="modal-box">
             <span class="close-btn" onclick="fecharModal('modalPerfil')">&times;</span>
-            <h3 data-i18n="profile">Meu Perfil</h3>
+            <h3>Meu Perfil</h3>
             <img id="previewImg" src="" style="width:80px; height:80px; border-radius:50%; margin:10px auto; display:block; object-fit:cover;">
             <input type="text" id="editNome" placeholder="Nome">
-            <input type="text" id="editFoto" placeholder="URL da Foto" oninput="atualizarPreview()">
-            <button class="btn-green" onclick="salvarPerfil()" data-i18n="save">Salvar</button>
+            <input type="text" id="editFoto" placeholder="URL da Foto (opcional)" oninput="atualizarPreview()">
+            <button class="btn-green" onclick="salvarPerfil()">Salvar</button>
         </div>
     </div>
 
     <div id="modalConfig" class="modal-bg">
         <div class="modal-box">
             <span class="close-btn" onclick="fecharModal('modalConfig')">&times;</span>
-            <h3 data-i18n="config">Configurações</h3>
-            
-            <div class="config-section">
-                <h4 data-i18n="lang">Idioma</h4>
-                <select id="selectIdioma" onchange="mudarIdioma(this.value)">
-                    <option value="pt">Português</option>
-                    <option value="en">English</option>
-                </select>
-            </div>
-
+            <h3>Configurações</h3>
             <div class="config-section">
                 <h4>Suporte</h4>
-                <a class="config-link" href="mailto:animalspicturehelp@gmail.com">animalspicturehelp@gmail.com</a>
+                <a href="mailto:animalspicturehelp@gmail.com" style="color:var(--green)">animalspicturehelp@gmail.com</a>
             </div>
-
             <div class="config-section">
-                <p style="font-size:12px; color:#666;">Logado como: <br><b id="userEmailDisplay">---</b></p>
-                <button class="btn-green" style="background:var(--red);" onclick="logout()" data-i18n="logout">Sair</button>
+                <h4>Dados Locais</h4>
+                <p style="font-size:12px; color:#aaa;">Se o site ficar lento, limpe o cache.</p>
+                <button class="btn-green" style="background:#444;" onclick="limparDados()">🗑️ Limpar Todos os Posts</button>
+            </div>
+            <div class="config-section">
+                <p style="font-size:12px;">Logado: <b id="userEmailDisplay">---</b></p>
+                <button class="btn-green" style="background:var(--red);" onclick="logout()">Sair</button>
             </div>
         </div>
     </div>
 
     <script>
-        // === 1. CONFIGURAÇÕES GERAIS ===
-        const TRANSLATIONS = {
-            pt: {
-                all: "Tudo", newPost: "Nova Publicação 🐾", publishBtn: "Publicar",
-                feat1: "✅ Posts Ilimitados", feat2: "✅ Zero Anúncios",
-                profile: "Meu Perfil", save: "Salvar", config: "Configurações",
-                lang: "Idioma", logout: "Sair da Conta",
-                descPlace: "Escreva algo...", catPlace: "Categoria...", racePlace: "Raça..."
-            },
-            en: {
-                all: "All", newPost: "New Post 🐾", publishBtn: "Publish",
-                feat1: "✅ Unlimited Posts", feat2: "✅ No Ads",
-                profile: "My Profile", save: "Save", config: "Settings",
-                lang: "Language", logout: "Logout",
-                descPlace: "Write something...", catPlace: "Category...", racePlace: "Breed..."
-            }
+        // === 1. LISTA COMPLETA DE RAÇAS ===
+        const CATEGORIAS = {
+            "Cães": [
+                "Vira-lata (SRD)", "Labrador", "Poodle", "Bulldog Francês", "Golden Retriever", 
+                "Pastor Alemão", "Shih Tzu", "Yorkshire", "Pug", "Rottweiler", 
+                "Husky Siberiano", "Chihuahua", "Beagle", "Dachshund (Salsicha)", 
+                "Pitbull", "Boxer", "Border Collie", "Chow Chow", "Pinscher"
+            ],
+            "Gatos": [
+                "Vira-lata (SRD)", "Siamês", "Persa", "Maine Coon", "Sphynx (Sem Pelo)", 
+                "Angorá", "Bengal", "Ragdoll", "British Shorthair", "Himalaia"
+            ],
+            "Pássaros": [
+                "Calopsita", "Canário", "Papagaio", "Periquito", "Arara", 
+                "Cacatua", "Agapornis", "Mandarim", "Curió"
+            ],
+            "Roedores": [
+                "Hamster", "Porquinho da Índia", "Chinchila", "Coelho", 
+                "Gerbil", "Rato Twister", "Furão"
+            ],
+            "Répteis": ["Tartaruga", "Jabuti", "Iguana", "Cobra", "Gecko"],
+            "Peixes": ["Betta", "Kinguio", "Guppy", "Tetra", "Ciclídeo"],
+            "Outros": ["Cavalo", "Vaca", "Ovelha", "Cabra", "Exótico"]
         };
 
         const ADMIN_EMAIL = "jarvismorato@gmail.com"; 
         const LIMITE = 29;
-        const CATEGORIAS = {
-            "Cães": ["Vira-lata", "Labrador", "Poodle", "Bulldog"],
-            "Gatos": ["Vira-lata", "Siamês", "Persa"],
-            "Pássaros": ["Calopsita", "Papagaio"],
-            "Outros": ["Exótico"]
-        };
-
         let usuario = { nome: "", foto: "", email: "", premium: false };
         let postsHoje = 0;
         let contadorSessao = 0;
-        let idiomaAtual = localStorage.getItem('app_lang') || 'pt';
 
         window.onload = function() {
             google.accounts.id.initialize({
@@ -214,101 +190,82 @@
 
             carregarDados();
             initCategorias();
-            aplicarIdioma(idiomaAtual);
-            renderizarFeedExemplo();
+            renderizarFeedCompleto();
         };
 
-        // === 2. LÓGICA DE FOTOS E ARQUIVOS (NOVO) ===
-        function lerArquivo(input) {
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-                reader.onload = function (e) {
-                    // Exibir prévia
-                    const img = document.getElementById('previewUpload');
-                    img.src = e.target.result;
-                    img.style.display = 'block';
-                    
-                    // Comprimir para salvar espaço
-                    comprimirImagem(e.target.result);
-                };
-                reader.readAsDataURL(input.files[0]);
+        // === 2. SISTEMA DE BANCO DE DADOS LOCAL (LocalStorage) ===
+        function getDB() {
+            return JSON.parse(localStorage.getItem('db_posts') || '[]');
+        }
+        function saveDB(posts) {
+            try {
+                localStorage.setItem('db_posts', JSON.stringify(posts));
+            } catch (e) {
+                alert("Memória cheia! Tente postar fotos menores ou limpar dados nas configurações.");
             }
         }
 
-        function comprimirImagem(base64Str) {
-            const img = new Image();
-            img.src = base64Str;
-            img.onload = function() {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                const maxWidth = 800; // Limite de tamanho para não travar
-                let width = img.width;
-                let height = img.height;
-
-                if (width > maxWidth) {
-                    height *= maxWidth / width;
-                    width = maxWidth;
-                }
-                canvas.width = width;
-                canvas.height = height;
-                ctx.drawImage(img, 0, 0, width, height);
-                
-                // Salva no input oculto
-                document.getElementById('finalImageBase64').value = canvas.toDataURL('image/jpeg', 0.7);
-            };
-        }
-
-        // === 3. LOGIN & DADOS ===
-        function handleLogin(res) {
-            const data = decodeJwt(res.credential);
-            const fotoSalva = localStorage.getItem('app_foto');
-            usuario.foto = fotoSalva ? fotoSalva : data.picture;
-            usuario.nome = localStorage.getItem('app_nome') || data.name;
-            usuario.email = data.email;
+        // === 3. RENDERIZAÇÃO DO FEED ===
+        function renderizarFeedCompleto() {
+            const feed = document.getElementById('feed');
+            feed.innerHTML = '';
             
-            localStorage.setItem('app_email', usuario.email);
-            if(!fotoSalva) localStorage.setItem('app_foto', usuario.foto);
-            if(!localStorage.getItem('app_nome')) localStorage.setItem('app_nome', usuario.nome);
+            // 1. Post fixo do Admin
+            criarPostHTML({
+                id: 'demo', nome: 'Admin', 
+                foto: 'https://ui-avatars.com/api/?name=Admin&background=random', 
+                desc: 'Bem-vindo! Agora seus posts ficam salvos no seu PC! 💾', 
+                img: 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=600&q=80', 
+                cat: 'Sistema', sub: 'Info', admin: true
+            });
 
-            atualizarUI();
+            // 2. Posts salvos no LocalStorage
+            const posts = getDB();
+            posts.forEach(p => criarPostHTML(p));
         }
 
-        function carregarDados() {
-            usuario.nome = localStorage.getItem('app_nome');
-            usuario.foto = localStorage.getItem('app_foto');
-            usuario.email = localStorage.getItem('app_email');
-            usuario.premium = localStorage.getItem('app_premium') === 'true';
+        function criarPostHTML(post) {
+            const div = document.createElement('div');
+            div.className = 'card post';
+            div.setAttribute('data-cat', post.cat);
+            div.setAttribute('data-id', post.id);
             
-            let hoje = new Date().toLocaleDateString();
-            if(localStorage.getItem('app_data') !== hoje) {
-                postsHoje = 0; localStorage.setItem('app_data', hoje);
-            } else {
-                postsHoje = parseInt(localStorage.getItem('app_qtd') || 0);
+            // Correção da Imagem de Perfil (Fallback)
+            const userPic = post.foto || avatarFallback(post.nome);
+            
+            let badge = "";
+            let borderClass = "";
+            if(post.admin || post.email === ADMIN_EMAIL) { 
+                badge = " <span class='badge-admin'>DONO</span>"; borderClass = "admin-border"; 
             }
-            atualizarUI();
-        }
 
-        function atualizarUI() {
-            if(usuario.email) {
-                document.getElementById('googleBtn').style.display = 'none';
-                document.getElementById('loggedArea').style.display = 'flex';
-                document.getElementById('postBox').style.display = 'block';
-                document.getElementById('headerImg').src = usuario.foto;
-                document.getElementById('editNome').value = usuario.nome;
-                document.getElementById('editFoto').value = usuario.foto;
-                document.getElementById('previewImg').src = usuario.foto;
-                document.getElementById('userEmailDisplay').innerText = usuario.email;
-                
-                const img = document.getElementById('headerImg');
-                img.className = '';
-                if(isAdmin()) img.classList.add('admin-border');
-                else if(usuario.premium) img.classList.add('premium-border');
-            }
-            atualizarLimite();
-        }
-
-        function isAdmin() {
-            return usuario.email && (usuario.email.trim().toLowerCase() === ADMIN_EMAIL.trim().toLowerCase());
+            div.innerHTML = `
+                <div class="post-header">
+                    <div class="post-user">
+                        <img src="${userPic}" class="post-avatar ${borderClass}" onerror="this.src='${avatarFallback(post.nome)}'">
+                        <div><b>${post.nome}${badge}</b></div>
+                    </div>
+                    <button class="btn-icon" style="border:none; color:red;" onclick="deletarPost('${post.id}')">🗑️</button>
+                </div>
+                <p>${post.desc}</p>
+                <span style="font-size:11px; background:#333; padding:4px 8px; border-radius:4px;">${post.cat} > ${post.sub}</span>
+                <img src="${post.img}" loading="lazy">
+                <div class="post-comments">
+                    <div class="comments-list" id="list-${post.id}"></div>
+                    ${usuario.email ? 
+                    `<div class="comment-form">
+                        <input type="text" class="comment-text" placeholder="Comente..." id="input-${post.id}">
+                        <button class="btn-comment" onclick="addComentario('${post.id}')">></button>
+                    </div>` : '<small>Logue para comentar</small>'}
+                </div>
+            `;
+            
+            // Adiciona logo após o topo (para os novos ficarem em cima)
+            const feed = document.getElementById('feed');
+            // Insere depois do primeiro filho (para manter o post admin no topo, ou mude para prepend)
+            feed.appendChild(div); 
+            
+            carregarComentarios(post.id);
         }
 
         // === 4. PUBLICAR ===
@@ -319,17 +276,34 @@
             }
 
             const desc = document.getElementById('descPost').value;
-            // Pega a imagem convertida ou URL colada (se houver no futuro)
-            const img = document.getElementById('finalImageBase64').value; 
+            const img = document.getElementById('finalImageBase64').value;
             const cat = document.getElementById('catSelect').value;
             const sub = document.getElementById('subSelect').value;
 
-            if(!img) return alert("Por favor, tire uma foto ou escolha um arquivo!");
+            if(!img) return alert("Escolha uma foto!");
             if(!cat || !sub) return alert("Selecione Categoria/Raça");
 
-            const postID = 'post_' + Date.now();
-            criarPostHTML(postID, usuario.nome, usuario.foto, desc, img, cat, sub);
+            const novoPost = {
+                id: 'post_' + Date.now(),
+                nome: usuario.nome,
+                foto: usuario.foto,
+                email: usuario.email, // Para saber se é admin depois
+                desc: desc,
+                img: img,
+                cat: cat,
+                sub: sub,
+                data: new Date().toISOString()
+            };
 
+            // Salvar no LocalStorage
+            const posts = getDB();
+            posts.unshift(novoPost); // Adiciona no começo
+            saveDB(posts);
+
+            // Renderizar na tela (recarrega tudo para ordenar certo)
+            renderizarFeedCompleto();
+
+            // Contadores
             if(!usuario.premium && !isAdmin()) {
                 postsHoje++; localStorage.setItem('app_qtd', postsHoje);
                 contadorSessao++;
@@ -343,42 +317,22 @@
             document.getElementById('finalImageBase64').value = "";
         }
 
-        function criarPostHTML(id, nome, foto, desc, imgUrl, cat, sub) {
-            const div = document.createElement('div');
-            div.className = 'card post';
-            div.setAttribute('data-cat', cat);
-            div.setAttribute('data-id', id);
+        function deletarPost(id) {
+            if(!confirm("Apagar post?")) return;
             
-            // Fallback da imagem do usuário se estiver quebrada
-            const userPic = foto || avatarFallback(nome);
+            // Se for o post demo
+            if(id === 'demo') return alert("Não pode apagar o post do sistema.");
 
-            let badge = "";
-            let borderClass = "";
-            if(isAdmin()) { badge = " <span class='badge-admin'>DONO</span>"; borderClass = "admin-border"; }
-            else if(usuario.premium) { borderClass = "premium-border"; }
-
-            div.innerHTML = `
-                <div class="post-header">
-                    <div class="post-user">
-                        <img src="${userPic}" class="post-avatar ${borderClass}" onerror="this.src='${avatarFallback(nome)}'">
-                        <div><b>${nome}${badge}</b></div>
-                    </div>
-                    ${isAdmin() ? `<button class="btn-icon" style="border:none; color:red;" onclick="this.closest('.card').remove()">🗑️</button>` : ''}
-                </div>
-                <p>${desc}</p>
-                <span style="font-size:11px; background:#333; padding:4px 8px; border-radius:4px;">${cat} > ${sub}</span>
-                <img src="${imgUrl}">
-                <div class="post-comments">
-                    <div class="comments-list" id="list-${id}"></div>
-                    ${usuario.email ? 
-                    `<div class="comment-form">
-                        <input type="text" placeholder="Comente..." id="input-${id}" style="flex:1;">
-                        <button class="btn-comment" onclick="addComentario('${id}')">></button>
-                    </div>` : '<small>Logue para comentar</small>'}
-                </div>
-            `;
-            document.getElementById('feed').prepend(div);
-            carregarComentarios(id);
+            let posts = getDB();
+            // Só deixa apagar se for o dono ou Admin
+            const post = posts.find(p => p.id === id);
+            if(post && (post.email === usuario.email || isAdmin())) {
+                posts = posts.filter(p => p.id !== id);
+                saveDB(posts);
+                document.querySelector(`[data-id="${id}"]`).remove();
+            } else {
+                alert("Você só pode apagar seus posts.");
+            }
         }
 
         // === 5. COMENTÁRIOS ===
@@ -387,10 +341,8 @@
             const texto = input.value;
             if(!texto) return;
 
-            // Garante que temos uma foto, ou usa o fallback
-            const userPic = usuario.foto || avatarFallback(usuario.nome);
-
-            const novoComentario = { user: usuario.nome, foto: userPic, text: texto };
+            const pic = usuario.foto || avatarFallback(usuario.nome);
+            const novoComentario = { user: usuario.nome, foto: pic, text: texto };
             
             let todos = JSON.parse(localStorage.getItem('comments') || '{}');
             if(!todos[postID]) todos[postID] = [];
@@ -412,8 +364,6 @@
             const list = document.getElementById(`list-${postID}`);
             const div = document.createElement('div');
             div.className = 'comment-item';
-            
-            // Proteção contra imagem quebrada no comentário
             div.innerHTML = `
                 <img src="${c.foto}" class="comment-avatar" onerror="this.src='${avatarFallback(c.user)}'">
                 <div class="comment-text"><b>${c.user}:</b> ${c.text}</div>
@@ -421,60 +371,89 @@
             list.appendChild(div);
         }
 
-        // === 6. UTILITÁRIOS ===
-        function avatarFallback(nome) {
-            return `https://ui-avatars.com/api/?name=${encodeURIComponent(nome)}&background=1e1e1e&color=00C853`;
+        // === 6. FOTOS E ARQUIVOS ===
+        function lerArquivo(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('previewUpload').src = e.target.result;
+                    document.getElementById('previewUpload').style.display = 'block';
+                    comprimirImagem(e.target.result);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
         }
 
-        function inserirAnuncio() {
-            const div = document.createElement('div');
-            div.className = 'card post post-ad';
-            div.innerHTML = `
-                <span style="background:#FFD700; color:black; padding:2px 5px; font-weight:bold; font-size:10px;">AD</span>
-                <div style="padding:20px;">
-                    <ins class="adsbygoogle"
-                         style="display:block"
-                         data-ad-client="ca-pub-6566744182494017"
-                         data-ad-slot="SEU_SLOT_AQUI"
-                         data-ad-format="auto"
-                         data-full-width-responsive="true"></ins>
-                    <script>(adsbygoogle = window.adsbygoogle || []).push({});<\/script>
-                </div>
-                <small onclick="abrirModal('modalPremium')" style="cursor:pointer; text-decoration:underline;">Remover (R$ 2,99)</small>
-            `;
-            document.getElementById('feed').prepend(div);
+        function comprimirImagem(base64Str) {
+            const img = new Image();
+            img.src = base64Str;
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const maxWidth = 600; // Reduzido para economizar LocalStorage
+                let width = img.width;
+                let height = img.height;
+
+                if (width > maxWidth) {
+                    height *= maxWidth / width;
+                    width = maxWidth;
+                }
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(img, 0, 0, width, height);
+                document.getElementById('finalImageBase64').value = canvas.toDataURL('image/jpeg', 0.6);
+            };
         }
 
-        function renderizarFeedExemplo() {
-            criarPostHTML('demo', 'Admin', avatarFallback('Admin'), 'Bem-vindo! Teste a nova câmera 📸', 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=600&q=80', 'Sistema', 'Info');
-        }
-
-        function salvarPerfil() {
-            const nome = document.getElementById('editNome').value;
-            const foto = document.getElementById('editFoto').value;
-            
-            if(nome) { usuario.nome = nome; localStorage.setItem('app_nome', nome); }
-            if(foto) { usuario.foto = foto; localStorage.setItem('app_foto', foto); }
-            
+        // === 7. UTILITÁRIOS E LOGIN ===
+        function handleLogin(res) {
+            const data = decodeJwt(res.credential);
+            const fotoSalva = localStorage.getItem('app_foto');
+            usuario.foto = fotoSalva ? fotoSalva : data.picture;
+            usuario.nome = localStorage.getItem('app_nome') || data.name;
+            usuario.email = data.email;
+            localStorage.setItem('app_email', usuario.email);
+            if(!fotoSalva) localStorage.setItem('app_foto', usuario.foto);
             atualizarUI();
-            fecharModal('modalPerfil');
         }
 
-        function aplicarIdioma(lang) {
-            const t = TRANSLATIONS[lang];
-            document.getElementById('selectIdioma').value = lang;
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if(t[key]) el.innerText = t[key];
-            });
-            document.getElementById('descPost').placeholder = t.descPlace;
-            document.getElementById('catSelect').options[0].text = t.catPlace;
-            document.getElementById('subSelect').options[0].text = t.racePlace;
+        function carregarDados() {
+            usuario.nome = localStorage.getItem('app_nome');
+            usuario.foto = localStorage.getItem('app_foto');
+            usuario.email = localStorage.getItem('app_email');
+            usuario.premium = localStorage.getItem('app_premium') === 'true';
+            
+            let hoje = new Date().toLocaleDateString();
+            if(localStorage.getItem('app_data') !== hoje) {
+                postsHoje = 0; localStorage.setItem('app_data', hoje);
+            } else {
+                postsHoje = parseInt(localStorage.getItem('app_qtd') || 0);
+            }
+            atualizarUI();
         }
 
-        function mudarIdioma(lang) {
-            idiomaAtual = lang; localStorage.setItem('app_lang', lang); aplicarIdioma(lang);
+        function actualizarUI() {
+            if(usuario.email) {
+                document.getElementById('googleBtn').style.display = 'none';
+                document.getElementById('loggedArea').style.display = 'flex';
+                document.getElementById('postBox').style.display = 'block';
+                document.getElementById('headerImg').src = usuario.foto;
+                document.getElementById('editNome').value = usuario.nome;
+                document.getElementById('editFoto').value = usuario.foto;
+                document.getElementById('previewImg').src = usuario.foto;
+                document.getElementById('userEmailDisplay').innerText = usuario.email;
+                
+                const img = document.getElementById('headerImg');
+                img.className = '';
+                if(isAdmin()) img.classList.add('admin-border');
+                else if(usuario.premium) img.classList.add('premium-border');
+            }
+            atualizarLimite();
         }
+
+        function isAdmin() { return usuario.email && (usuario.email.trim().toLowerCase() === ADMIN_EMAIL.trim().toLowerCase()); }
+        function avatarFallback(n) { return `https://ui-avatars.com/api/?name=${encodeURIComponent(n||'U')}&background=1e1e1e&color=00C853`; }
+        function decodeJwt(t) { return JSON.parse(decodeURIComponent(window.atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''))); }
 
         function initCategorias() {
             const sel = document.getElementById('catSelect');
@@ -499,23 +478,27 @@
             });
         }
 
-        function atualizarPreview() { document.getElementById('previewImg').src = document.getElementById('editFoto').value; }
-        function atualizarLimite() { 
-            const el = document.getElementById('limitDisplay');
-            if(isAdmin() || usuario.premium) el.innerText = "Ilimitado ✨";
-            else el.innerText = `Restam ${LIMITE - postsHoje} posts hoje.`;
+        function inserirAnuncio() {
+            const div = document.createElement('div');
+            div.className = 'card post post-ad';
+            div.innerHTML = `<span style="background:#FFD700;color:black;font-weight:bold;">AD</span><br><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6566744182494017" data-ad-slot="SEU_SLOT" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});<\/script><small onclick="abrirModal('modalPremium')">Remover</small>`;
+            document.getElementById('feed').prepend(div);
         }
+
+        function salvarPerfil() {
+            usuario.nome = document.getElementById('editNome').value;
+            usuario.foto = document.getElementById('editFoto').value;
+            localStorage.setItem('app_nome', usuario.nome); 
+            localStorage.setItem('app_foto', usuario.foto);
+            atualizarUI(); fecharModal('modalPerfil');
+        }
+        function atualizarPreview() { document.getElementById('previewImg').src = document.getElementById('editFoto').value; }
+        function atualizarLimite() { document.getElementById('limitDisplay').innerText = (isAdmin() || usuario.premium) ? "Ilimitado ✨" : `Restam ${LIMITE - postsHoje} posts`; }
         function abrirModal(id) { document.getElementById(id).classList.add('open'); }
         function fecharModal(id) { document.getElementById(id).classList.remove('open'); }
         function logout() { localStorage.clear(); location.reload(); }
-        function decodeJwt(t) { return JSON.parse(decodeURIComponent(window.atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''))); }
-        
-        function assinarPremium() {
-            if(confirm("Pagar R$ 2,99?")) {
-                usuario.premium = true; localStorage.setItem('app_premium', 'true');
-                atualizarUI(); fecharModal('modalPremium'); alert("Você agora é Premium!");
-            }
-        }
+        function limparDados() { if(confirm("Apagar todos os posts salvos?")) { localStorage.removeItem('db_posts'); location.reload(); } }
+        function assinarPremium() { if(confirm("Pagar R$ 2,99?")) { usuario.premium = true; localStorage.setItem('app_premium', 'true'); atualizarUI(); fecharModal('modalPremium'); } }
     </script>
 </body>
 </html>

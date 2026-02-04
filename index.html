@@ -12,11 +12,8 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6566744182494017" crossorigin="anonymous"></script>
 
     <style>
-        /* === TEMA E ESTILOS === */
-        :root {
-            --bg: #121212; --card: #1e1e1e; --text: #e0e0e0;
-            --border: #333; --green: #00C853; --red: #D50000; --gold: #FFD700;
-        }
+        /* === ESTILOS === */
+        :root { --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --border: #333; --green: #00C853; --red: #D50000; --gold: #FFD700; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; }
         
         header { width: 100%; height: 70px; background: var(--card); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-sizing: border-box; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
@@ -153,27 +150,11 @@
     <script>
         // === 1. LISTA COMPLETA DE RAÇAS ===
         const CATEGORIAS = {
-            "Cães": [
-                "Vira-lata (SRD)", "Labrador", "Poodle", "Bulldog Francês", "Golden Retriever", 
-                "Pastor Alemão", "Shih Tzu", "Yorkshire", "Pug", "Rottweiler", 
-                "Husky Siberiano", "Chihuahua", "Beagle", "Dachshund (Salsicha)", 
-                "Pitbull", "Boxer", "Border Collie", "Chow Chow", "Pinscher"
-            ],
-            "Gatos": [
-                "Vira-lata (SRD)", "Siamês", "Persa", "Maine Coon", "Sphynx (Sem Pelo)", 
-                "Angorá", "Bengal", "Ragdoll", "British Shorthair", "Himalaia"
-            ],
-            "Pássaros": [
-                "Calopsita", "Canário", "Papagaio", "Periquito", "Arara", 
-                "Cacatua", "Agapornis", "Mandarim", "Curió"
-            ],
-            "Roedores": [
-                "Hamster", "Porquinho da Índia", "Chinchila", "Coelho", 
-                "Gerbil", "Rato Twister", "Furão"
-            ],
-            "Répteis": ["Tartaruga", "Jabuti", "Iguana", "Cobra", "Gecko"],
-            "Peixes": ["Betta", "Kinguio", "Guppy", "Tetra", "Ciclídeo"],
-            "Outros": ["Cavalo", "Vaca", "Ovelha", "Cabra", "Exótico"]
+            "Cães": ["Vira-lata (SRD)", "Labrador", "Poodle", "Bulldog", "Golden Retriever", "Pastor Alemão", "Shih Tzu", "Yorkshire", "Pug", "Rottweiler", "Husky", "Pinscher", "Beagle", "Chow Chow"],
+            "Gatos": ["Vira-lata (SRD)", "Siamês", "Persa", "Maine Coon", "Sphynx", "Angorá", "Bengal", "Ragdoll"],
+            "Pássaros": ["Calopsita", "Canário", "Papagaio", "Periquito", "Arara", "Cacatua", "Agapornis"],
+            "Roedores": ["Hamster", "Porquinho da Índia", "Chinchila", "Coelho", "Gerbil"],
+            "Outros": ["Tartaruga", "Iguana", "Cobra", "Betta", "Cavalo", "Exótico"]
         };
 
         const ADMIN_EMAIL = "jarvismorato@gmail.com"; 
@@ -195,15 +176,10 @@
         };
 
         // === 2. SISTEMA DE BANCO DE DADOS LOCAL (LocalStorage) ===
-        function getDB() {
-            return JSON.parse(localStorage.getItem('db_posts') || '[]');
-        }
+        function getDB() { return JSON.parse(localStorage.getItem('db_posts') || '[]'); }
         function saveDB(posts) {
-            try {
-                localStorage.setItem('db_posts', JSON.stringify(posts));
-            } catch (e) {
-                alert("Memória cheia! Tente postar fotos menores ou limpar dados nas configurações.");
-            }
+            try { localStorage.setItem('db_posts', JSON.stringify(posts)); } 
+            catch (e) { alert("Memória cheia! Limpe dados nas configurações."); }
         }
 
         // === 3. RENDERIZAÇÃO DO FEED ===
@@ -211,16 +187,16 @@
             const feed = document.getElementById('feed');
             feed.innerHTML = '';
             
-            // 1. Post fixo do Admin
+            // Post Demo
             criarPostHTML({
                 id: 'demo', nome: 'Admin', 
                 foto: 'https://ui-avatars.com/api/?name=Admin&background=random', 
-                desc: 'Bem-vindo! Agora seus posts ficam salvos no seu PC! 💾', 
+                desc: 'Bem-vindo! Seus posts agora ficam salvos no seu PC! 💾', 
                 img: 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=600&q=80', 
                 cat: 'Sistema', sub: 'Info', admin: true
             });
 
-            // 2. Posts salvos no LocalStorage
+            // Posts Salvos
             const posts = getDB();
             posts.forEach(p => criarPostHTML(p));
         }
@@ -231,9 +207,7 @@
             div.setAttribute('data-cat', post.cat);
             div.setAttribute('data-id', post.id);
             
-            // Correção da Imagem de Perfil (Fallback)
             const userPic = post.foto || avatarFallback(post.nome);
-            
             let badge = "";
             let borderClass = "";
             if(post.admin || post.email === ADMIN_EMAIL) { 
@@ -260,12 +234,7 @@
                     </div>` : '<small>Logue para comentar</small>'}
                 </div>
             `;
-            
-            // Adiciona logo após o topo (para os novos ficarem em cima)
-            const feed = document.getElementById('feed');
-            // Insere depois do primeiro filho (para manter o post admin no topo, ou mude para prepend)
-            feed.appendChild(div); 
-            
+            document.getElementById('feed').appendChild(div); 
             carregarComentarios(post.id);
         }
 
@@ -273,7 +242,7 @@
         function publicar(e) {
             e.preventDefault();
             if(!usuario.premium && !isAdmin() && postsHoje >= LIMITE) {
-                alert("Limite diário atingido!"); abrirModal('modalPremium'); return;
+                alert("Limite atingido!"); abrirModal('modalPremium'); return;
             }
 
             const desc = document.getElementById('descPost').value;
@@ -288,7 +257,7 @@
                 id: 'post_' + Date.now(),
                 nome: usuario.nome,
                 foto: usuario.foto,
-                email: usuario.email, // Para saber se é admin depois
+                email: usuario.email,
                 desc: desc,
                 img: img,
                 cat: cat,
@@ -296,15 +265,11 @@
                 data: new Date().toISOString()
             };
 
-            // Salvar no LocalStorage
             const posts = getDB();
-            posts.unshift(novoPost); // Adiciona no começo
+            posts.unshift(novoPost);
             saveDB(posts);
-
-            // Renderizar na tela (recarrega tudo para ordenar certo)
             renderizarFeedCompleto();
 
-            // Contadores
             if(!usuario.premium && !isAdmin()) {
                 postsHoje++; localStorage.setItem('app_qtd', postsHoje);
                 contadorSessao++;
@@ -312,7 +277,6 @@
                 atualizarLimite();
             }
             
-            // Limpa form
             e.target.reset();
             document.getElementById('previewUpload').style.display = 'none';
             document.getElementById('finalImageBase64').value = "";
@@ -320,59 +284,46 @@
 
         function deletarPost(id) {
             if(!confirm("Apagar post?")) return;
-            
-            // Se for o post demo
-            if(id === 'demo') return alert("Não pode apagar o post do sistema.");
-
+            if(id === 'demo') return alert("Post demo não pode ser apagado.");
             let posts = getDB();
-            // Só deixa apagar se for o dono ou Admin
             const post = posts.find(p => p.id === id);
             if(post && (post.email === usuario.email || isAdmin())) {
                 posts = posts.filter(p => p.id !== id);
                 saveDB(posts);
-                document.querySelector(`[data-id="${id}"]`).remove();
+                renderizarFeedCompleto();
             } else {
                 alert("Você só pode apagar seus posts.");
             }
         }
 
-        // === 5. COMENTÁRIOS ===
+        // === 5. COMENTÁRIOS E FOTOS ===
         function addComentario(postID) {
             const input = document.getElementById(`input-${postID}`);
             const texto = input.value;
             if(!texto) return;
-
             const pic = usuario.foto || avatarFallback(usuario.nome);
-            const novoComentario = { user: usuario.nome, foto: pic, text: texto };
-            
+            const novo = { user: usuario.nome, foto: pic, text: texto };
             let todos = JSON.parse(localStorage.getItem('comments') || '{}');
             if(!todos[postID]) todos[postID] = [];
-            todos[postID].push(novoComentario);
+            todos[postID].push(novo);
             localStorage.setItem('comments', JSON.stringify(todos));
-
-            renderComentario(postID, novoComentario);
+            renderComentario(postID, novo);
             input.value = '';
         }
 
         function carregarComentarios(postID) {
             let todos = JSON.parse(localStorage.getItem('comments') || '{}');
-            if(todos[postID]) {
-                todos[postID].forEach(c => renderComentario(postID, c));
-            }
+            if(todos[postID]) todos[postID].forEach(c => renderComentario(postID, c));
         }
 
         function renderComentario(postID, c) {
             const list = document.getElementById(`list-${postID}`);
             const div = document.createElement('div');
             div.className = 'comment-item';
-            div.innerHTML = `
-                <img src="${c.foto}" class="comment-avatar" onerror="this.src='${avatarFallback(c.user)}'">
-                <div class="comment-text"><b>${c.user}:</b> ${c.text}</div>
-            `;
+            div.innerHTML = `<img src="${c.foto}" class="comment-avatar" onerror="this.src='${avatarFallback(c.user)}'"><div class="comment-text"><b>${c.user}:</b> ${c.text}</div>`;
             list.appendChild(div);
         }
 
-        // === 6. FOTOS E ARQUIVOS ===
         function lerArquivo(input) {
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
@@ -391,22 +342,16 @@
             img.onload = function() {
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
-                const maxWidth = 600; // Reduzido para economizar LocalStorage
-                let width = img.width;
-                let height = img.height;
-
-                if (width > maxWidth) {
-                    height *= maxWidth / width;
-                    width = maxWidth;
-                }
-                canvas.width = width;
-                canvas.height = height;
+                const maxWidth = 600;
+                let width = img.width; let height = img.height;
+                if (width > maxWidth) { height *= maxWidth / width; width = maxWidth; }
+                canvas.width = width; canvas.height = height;
                 ctx.drawImage(img, 0, 0, width, height);
                 document.getElementById('finalImageBase64').value = canvas.toDataURL('image/jpeg', 0.6);
             };
         }
 
-        // === 7. UTILITÁRIOS E LOGIN ===
+        // === 6. UTILITÁRIOS ===
         function handleLogin(res) {
             const data = decodeJwt(res.credential);
             const fotoSalva = localStorage.getItem('app_foto');
@@ -423,17 +368,13 @@
             usuario.foto = localStorage.getItem('app_foto');
             usuario.email = localStorage.getItem('app_email');
             usuario.premium = localStorage.getItem('app_premium') === 'true';
-            
             let hoje = new Date().toLocaleDateString();
-            if(localStorage.getItem('app_data') !== hoje) {
-                postsHoje = 0; localStorage.setItem('app_data', hoje);
-            } else {
-                postsHoje = parseInt(localStorage.getItem('app_qtd') || 0);
-            }
+            if(localStorage.getItem('app_data') !== hoje) { postsHoje = 0; localStorage.setItem('app_data', hoje); }
+            else { postsHoje = parseInt(localStorage.getItem('app_qtd') || 0); }
             atualizarUI();
         }
 
-        function actualizarUI() {
+        function atualizarUI() {
             if(usuario.email) {
                 document.getElementById('googleBtn').style.display = 'none';
                 document.getElementById('loggedArea').style.display = 'flex';
@@ -443,7 +384,6 @@
                 document.getElementById('editFoto').value = usuario.foto;
                 document.getElementById('previewImg').src = usuario.foto;
                 document.getElementById('userEmailDisplay').innerText = usuario.email;
-                
                 const img = document.getElementById('headerImg');
                 img.className = '';
                 if(isAdmin()) img.classList.add('admin-border');
@@ -479,10 +419,13 @@
             });
         }
 
+        // === PROTEÇÃO DO ANÚNCIO (CORREÇÃO DO BUG VISUAL) ===
         function inserirAnuncio() {
             const div = document.createElement('div');
             div.className = 'card post post-ad';
-            div.innerHTML = `<span style="background:#FFD700;color:black;font-weight:bold;">AD</span><br><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6566744182494017" data-ad-slot="SEU_SLOT" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});<\/script><small onclick="abrirModal('modalPremium')">Remover</small>`;
+            // Usando concatenação para enganar o navegador e não quebrar o código
+            const scriptTag = '<scr' + 'ipt>(adsbygoogle = window.adsbygoogle || []).push({});</scr' + 'ipt>';
+            div.innerHTML = `<span style="background:#FFD700;color:black;font-weight:bold;">AD</span><br><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6566744182494017" data-ad-slot="SEU_SLOT" data-ad-format="auto" data-full-width-responsive="true"></ins>` + scriptTag + `<small onclick="abrirModal('modalPremium')">Remover</small>`;
             document.getElementById('feed').prepend(div);
         }
 

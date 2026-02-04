@@ -44,6 +44,16 @@
         input, textarea, select { width: 100%; background: #2c2c2c; border: 1px solid var(--border); color: white; padding: 12px; border-radius: 8px; margin: 8px 0; box-sizing: border-box; }
         .btn-green { width: 100%; background: var(--green); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
         
+        /* UPLOAD DE IMAGEM */
+        .file-upload-label {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            background: #2c2c2c; border: 1px dashed #666; padding: 15px;
+            border-radius: 8px; cursor: pointer; color: #aaa; font-size: 14px;
+            transition: 0.2s; margin: 10px 0;
+        }
+        .file-upload-label:hover { background: #333; border-color: var(--green); color: white; }
+        #previewUpload { width: 100%; border-radius: 8px; margin-top: 10px; display: none; object-fit: contain; max-height: 300px; }
+
         /* POSTS */
         .post img { width: 100%; border-radius: 10px; margin-top: 10px; }
         .post-header { display: flex; align-items: center; justify-content: space-between; }
@@ -54,8 +64,8 @@
         /* COMENTÁRIOS */
         .post-comments { margin-top: 15px; border-top: 1px solid #333; padding-top: 10px; }
         .comment-item { display: flex; gap: 10px; margin-bottom: 10px; }
-        .comment-avatar { width: 30px; height: 30px; border-radius: 50%; }
-        .comment-text { font-size: 13px; color: #ccc; background: #252525; padding: 8px; border-radius: 8px; flex: 1; }
+        .comment-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+        .comment-text { font-size: 13px; color: #ccc; background: #252525; padding: 8px; border-radius: 8px; flex: 1; word-break: break-word; }
         .comment-form { display: flex; gap: 8px; margin-top: 10px; }
         .btn-comment { background: var(--green); border: none; color: white; border-radius: 8px; padding: 0 15px; cursor: pointer; }
 
@@ -93,12 +103,19 @@
             <h3 data-i18n="newPost">Nova Publicação 🐾</h3>
             <form onsubmit="publicar(event)">
                 <textarea id="descPost" rows="2" required></textarea>
+                
                 <div style="display:flex; gap:10px; margin:10px 0;">
                     <select id="catSelect" required onchange="carregarSub()"><option value="">Categoria...</option></select>
                     <select id="subSelect" disabled required><option value="">Raça...</option></select>
                 </div>
-                <input type="url" id="imgUrlPost" placeholder="URL da imagem..." required>
-                <button class="btn-green" data-i18n="publishBtn">Publicar</button>
+
+                <label class="file-upload-label">
+                    <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="lerArquivo(this)">
+                    <span>📷 Tirar Foto ou Escolher Arquivo</span>
+                </label>
+                
+                <img id="previewUpload" src="">
+                <input type="hidden" id="finalImageBase64"> <button class="btn-green" data-i18n="publishBtn">Publicar</button>
                 <div id="limitDisplay" style="font-size:12px; color:#888; margin-top:5px; text-align:center;"></div>
             </form>
         </div>
@@ -156,23 +173,21 @@
     </div>
 
     <script>
-        // === 1. DICIONÁRIO DE IDIOMAS ===
+        // === 1. CONFIGURAÇÕES GERAIS ===
         const TRANSLATIONS = {
             pt: {
                 all: "Tudo", newPost: "Nova Publicação 🐾", publishBtn: "Publicar",
                 feat1: "✅ Posts Ilimitados", feat2: "✅ Zero Anúncios",
                 profile: "Meu Perfil", save: "Salvar", config: "Configurações",
                 lang: "Idioma", logout: "Sair da Conta",
-                descPlace: "Escreva algo...", imgPlace: "Link da imagem (URL)...",
-                catPlace: "Categoria...", racePlace: "Raça..."
+                descPlace: "Escreva algo...", catPlace: "Categoria...", racePlace: "Raça..."
             },
             en: {
                 all: "All", newPost: "New Post 🐾", publishBtn: "Publish",
                 feat1: "✅ Unlimited Posts", feat2: "✅ No Ads",
                 profile: "My Profile", save: "Save", config: "Settings",
                 lang: "Language", logout: "Logout",
-                descPlace: "Write something...", imgPlace: "Image Link (URL)...",
-                catPlace: "Category...", racePlace: "Breed..."
+                descPlace: "Write something...", catPlace: "Category...", racePlace: "Breed..."
             }
         };
 
@@ -200,17 +215,54 @@
             carregarDados();
             initCategorias();
             aplicarIdioma(idiomaAtual);
-            renderizarFeedExemplo(); // Carrega post de exemplo se vazio
+            renderizarFeedExemplo();
         };
 
-        // === 2. SISTEMA DE LOGIN & DADOS ===
+        // === 2. LÓGICA DE FOTOS E ARQUIVOS (NOVO) ===
+        function lerArquivo(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    // Exibir prévia
+                    const img = document.getElementById('previewUpload');
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                    
+                    // Comprimir para salvar espaço
+                    comprimirImagem(e.target.result);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function comprimirImagem(base64Str) {
+            const img = new Image();
+            img.src = base64Str;
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const maxWidth = 800; // Limite de tamanho para não travar
+                let width = img.width;
+                let height = img.height;
+
+                if (width > maxWidth) {
+                    height *= maxWidth / width;
+                    width = maxWidth;
+                }
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Salva no input oculto
+                document.getElementById('finalImageBase64').value = canvas.toDataURL('image/jpeg', 0.7);
+            };
+        }
+
+        // === 3. LOGIN & DADOS ===
         function handleLogin(res) {
             const data = decodeJwt(res.credential);
-            
-            // LÓGICA DA FOTO: Só usa a do Google se não tiver uma personalizada salva
             const fotoSalva = localStorage.getItem('app_foto');
             usuario.foto = fotoSalva ? fotoSalva : data.picture;
-            
             usuario.nome = localStorage.getItem('app_nome') || data.name;
             usuario.email = data.email;
             
@@ -247,7 +299,6 @@
                 document.getElementById('previewImg').src = usuario.foto;
                 document.getElementById('userEmailDisplay').innerText = usuario.email;
                 
-                // Bordas
                 const img = document.getElementById('headerImg');
                 img.className = '';
                 if(isAdmin()) img.classList.add('admin-border');
@@ -256,35 +307,11 @@
             atualizarLimite();
         }
 
-        // === 3. IDIOMA ===
-        function mudarIdioma(lang) {
-            idiomaAtual = lang;
-            localStorage.setItem('app_lang', lang);
-            aplicarIdioma(lang);
-        }
-
-        function aplicarIdioma(lang) {
-            const t = TRANSLATIONS[lang];
-            document.getElementById('selectIdioma').value = lang;
-            
-            // Textos simples
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if(t[key]) el.innerText = t[key];
-            });
-
-            // Placeholders
-            document.getElementById('descPost').placeholder = t.descPlace;
-            document.getElementById('imgUrlPost').placeholder = t.imgPlace;
-            document.getElementById('catSelect').options[0].text = t.catPlace;
-            document.getElementById('subSelect').options[0].text = t.racePlace;
-        }
-
-        // === 4. PUBLICAR & COMENTÁRIOS ===
         function isAdmin() {
-            return usuario.email && (usuario.email.toLowerCase() === ADMIN_EMAIL.toLowerCase());
+            return usuario.email && (usuario.email.trim().toLowerCase() === ADMIN_EMAIL.trim().toLowerCase());
         }
 
+        // === 4. PUBLICAR ===
         function publicar(e) {
             e.preventDefault();
             if(!usuario.premium && !isAdmin() && postsHoje >= LIMITE) {
@@ -292,10 +319,12 @@
             }
 
             const desc = document.getElementById('descPost').value;
-            const img = document.getElementById('imgUrlPost').value;
+            // Pega a imagem convertida ou URL colada (se houver no futuro)
+            const img = document.getElementById('finalImageBase64').value; 
             const cat = document.getElementById('catSelect').value;
             const sub = document.getElementById('subSelect').value;
 
+            if(!img) return alert("Por favor, tire uma foto ou escolha um arquivo!");
             if(!cat || !sub) return alert("Selecione Categoria/Raça");
 
             const postID = 'post_' + Date.now();
@@ -308,7 +337,10 @@
                 atualizarLimite();
             }
             
+            // Limpa form
             e.target.reset();
+            document.getElementById('previewUpload').style.display = 'none';
+            document.getElementById('finalImageBase64').value = "";
         }
 
         function criarPostHTML(id, nome, foto, desc, imgUrl, cat, sub) {
@@ -317,6 +349,9 @@
             div.setAttribute('data-cat', cat);
             div.setAttribute('data-id', id);
             
+            // Fallback da imagem do usuário se estiver quebrada
+            const userPic = foto || avatarFallback(nome);
+
             let badge = "";
             let borderClass = "";
             if(isAdmin()) { badge = " <span class='badge-admin'>DONO</span>"; borderClass = "admin-border"; }
@@ -325,7 +360,7 @@
             div.innerHTML = `
                 <div class="post-header">
                     <div class="post-user">
-                        <img src="${foto}" class="post-avatar ${borderClass}">
+                        <img src="${userPic}" class="post-avatar ${borderClass}" onerror="this.src='${avatarFallback(nome)}'">
                         <div><b>${nome}${badge}</b></div>
                     </div>
                     ${isAdmin() ? `<button class="btn-icon" style="border:none; color:red;" onclick="this.closest('.card').remove()">🗑️</button>` : ''}
@@ -346,15 +381,17 @@
             carregarComentarios(id);
         }
 
-        // Sistema de Comentários (Salvos no LocalStorage)
+        // === 5. COMENTÁRIOS ===
         function addComentario(postID) {
             const input = document.getElementById(`input-${postID}`);
             const texto = input.value;
             if(!texto) return;
 
-            const novoComentario = { user: usuario.nome, foto: usuario.foto, text: texto };
+            // Garante que temos uma foto, ou usa o fallback
+            const userPic = usuario.foto || avatarFallback(usuario.nome);
+
+            const novoComentario = { user: usuario.nome, foto: userPic, text: texto };
             
-            // Salva
             let todos = JSON.parse(localStorage.getItem('comments') || '{}');
             if(!todos[postID]) todos[postID] = [];
             todos[postID].push(novoComentario);
@@ -375,14 +412,20 @@
             const list = document.getElementById(`list-${postID}`);
             const div = document.createElement('div');
             div.className = 'comment-item';
+            
+            // Proteção contra imagem quebrada no comentário
             div.innerHTML = `
-                <img src="${c.foto}" class="comment-avatar">
+                <img src="${c.foto}" class="comment-avatar" onerror="this.src='${avatarFallback(c.user)}'">
                 <div class="comment-text"><b>${c.user}:</b> ${c.text}</div>
             `;
             list.appendChild(div);
         }
 
-        // === UTILITÁRIOS ===
+        // === 6. UTILITÁRIOS ===
+        function avatarFallback(nome) {
+            return `https://ui-avatars.com/api/?name=${encodeURIComponent(nome)}&background=1e1e1e&color=00C853`;
+        }
+
         function inserirAnuncio() {
             const div = document.createElement('div');
             div.className = 'card post post-ad';
@@ -403,18 +446,34 @@
         }
 
         function renderizarFeedExemplo() {
-            // Cria um post fixo de exemplo se quiser
-            criarPostHTML('demo', 'Admin', 'https://ui-avatars.com/api/?name=Admin', 'Bem-vindo ao Animals Picture! 🐶', 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=600&q=80', 'Sistema', 'Info');
+            criarPostHTML('demo', 'Admin', avatarFallback('Admin'), 'Bem-vindo! Teste a nova câmera 📸', 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=600&q=80', 'Sistema', 'Info');
         }
 
         function salvarPerfil() {
             const nome = document.getElementById('editNome').value;
             const foto = document.getElementById('editFoto').value;
+            
             if(nome) { usuario.nome = nome; localStorage.setItem('app_nome', nome); }
             if(foto) { usuario.foto = foto; localStorage.setItem('app_foto', foto); }
             
             atualizarUI();
             fecharModal('modalPerfil');
+        }
+
+        function aplicarIdioma(lang) {
+            const t = TRANSLATIONS[lang];
+            document.getElementById('selectIdioma').value = lang;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if(t[key]) el.innerText = t[key];
+            });
+            document.getElementById('descPost').placeholder = t.descPlace;
+            document.getElementById('catSelect').options[0].text = t.catPlace;
+            document.getElementById('subSelect').options[0].text = t.racePlace;
+        }
+
+        function mudarIdioma(lang) {
+            idiomaAtual = lang; localStorage.setItem('app_lang', lang); aplicarIdioma(lang);
         }
 
         function initCategorias() {

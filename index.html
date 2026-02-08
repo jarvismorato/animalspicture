@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Animals Picture - Rede Social</title>
-    <meta name="description" content="A melhor comunidade para compartilhar fotos de animais. Cães, gatos, pássaros e muito mais. Junte-se a nós!">
+    <title>Animals Picture - V21</title>
+    <meta name="description" content="Rede social local com temas e idiomas.">
     <meta name="theme-color" content="#121212">
     
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -12,38 +12,51 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6566744182494017" crossorigin="anonymous"></script>
 
     <style>
-        /* === ESTILOS === */
-        :root { --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --border: #333; --green: #00C853; --red: #D50000; --gold: #FFD700; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; }
+        /* === TEMA ESCURO (PADRÃO) === */
+        :root {
+            --bg: #121212; --card: #1e1e1e; --text: #e0e0e0;
+            --border: #333; --green: #00C853; --red: #D50000; --gold: #FFD700;
+            --input-bg: #2c2c2c;
+        }
+
+        /* === TEMA CLARO (ATIVADO VIA CLASSE) === */
+        body.light-theme {
+            --bg: #f0f2f5; --card: #ffffff; --text: #1c1e21;
+            --border: #ddd; --input-bg: #f0f2f5;
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; transition: background 0.3s, color 0.3s; }
         
-        header { width: 100%; height: 70px; background: var(--card); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-sizing: border-box; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+        header { width: 100%; height: 70px; background: var(--card); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-sizing: border-box; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; transition: background 0.3s; }
         .logo { font-size: 22px; font-weight: 800; color: var(--green); margin: 0; }
-        .logo span { color: #fff; }
+        .logo span { color: var(--text); }
         .header-actions { display: flex; align-items: center; gap: 12px; }
 
-        .btn-icon { background: transparent; border: 1px solid var(--border); color: var(--text); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .btn-icon { background: transparent; border: 1px solid var(--border); color: var(--text); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: 0.2s; }
+        .btn-icon:hover { background: rgba(0, 200, 83, 0.1); border-color: var(--green); }
         .btn-premium { border-color: var(--gold); color: var(--gold); background: rgba(255, 215, 0, 0.1); }
         .user-mini img { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--green); cursor: pointer; object-fit: cover; }
         
-        .topic-bar { width: 100%; background: var(--bg); border-bottom: 1px solid var(--border); display: flex; gap: 10px; padding: 12px; overflow-x: auto; position: sticky; top: 70px; z-index: 90; }
-        .topic-btn { background: var(--card); border: 1px solid var(--border); color: #aaa; padding: 8px 18px; border-radius: 20px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+        .topic-bar { width: 100%; background: var(--bg); border-bottom: 1px solid var(--border); display: flex; gap: 10px; padding: 12px; overflow-x: auto; position: sticky; top: 70px; z-index: 90; transition: background 0.3s; }
+        .topic-btn { background: var(--card); border: 1px solid var(--border); color: #888; padding: 8px 18px; border-radius: 20px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+        .topic-btn:hover { background: var(--border); }
         .topic-btn.active { background: var(--green); color: white; border-color: var(--green); font-weight: bold; }
 
         main { width: 100%; max-width: 600px; padding: 20px 10px; padding-bottom: 80px; }
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 25px; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 25px; transition: background 0.3s; }
         
-        /* CONTEÚDO ESTÁTICO (PARA O GOOGLE LER) */
+        /* CONTEÚDO ESTÁTICO */
         .static-content { background: var(--card); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border); }
         .static-content h2 { color: var(--green); margin-top: 0; }
-        .static-content p { font-size: 14px; color: #ccc; line-height: 1.6; }
-        .static-content ul { padding-left: 20px; color: #aaa; font-size: 14px; }
-        .footer-legal { font-size: 11px; color: #555; text-align: center; margin-top: 30px; border-top: 1px solid #222; padding-top: 10px; }
+        .static-content p, .static-content ul { font-size: 14px; color: var(--text); opacity: 0.8; line-height: 1.6; }
+        .footer-legal { font-size: 11px; color: #888; text-align: center; margin-top: 30px; border-top: 1px solid var(--border); padding-top: 10px; }
 
-        input, textarea, select { width: 100%; background: #2c2c2c; border: 1px solid var(--border); color: white; padding: 12px; border-radius: 8px; margin: 8px 0; box-sizing: border-box; font-family: inherit; }
+        input, textarea, select { width: 100%; background: var(--input-bg); border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 8px; margin: 8px 0; box-sizing: border-box; font-family: inherit; }
         .btn-green { width: 100%; background: var(--green); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
         
-        .file-upload-label { display: flex; align-items: center; justify-content: center; gap: 10px; background: #333; border: 2px dashed #555; padding: 20px; border-radius: 12px; cursor: pointer; color: white; font-weight:bold; font-size: 15px; margin: 15px 0; }
-        #previewUpload { width: 100%; border-radius: 8px; margin-top: 10px; display: none; object-fit: contain; max-height: 300px; border: 1px solid #333; }
+        .file-upload-label { display: flex; align-items: center; justify-content: center; gap: 10px; background: var(--input-bg); border: 2px dashed var(--border); padding: 20px; border-radius: 12px; cursor: pointer; color: var(--text); font-weight:bold; font-size: 15px; margin: 15px 0; transition: 0.3s; }
+        .file-upload-label:hover { border-color: var(--green); }
+        #previewUpload { width: 100%; border-radius: 8px; margin-top: 10px; display: none; object-fit: contain; max-height: 300px; border: 1px solid var(--border); }
 
         .post img { width: 100%; border-radius: 10px; margin-top: 10px; }
         .post-header { display: flex; align-items: center; justify-content: space-between; }
@@ -51,25 +64,27 @@
         .post-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
         .badge-admin { background: var(--red); color: white; font-size: 9px; padding: 2px 6px; border-radius: 4px; margin-left: 5px; font-weight: bold; }
         
-        .post-actions-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px solid #333; }
+        .post-actions-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
         .action-btn { background: none; border: none; color: #888; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 14px; padding: 5px 10px; border-radius: 20px; }
         .btn-like.liked { color: var(--red); }
         .btn-delete { color: var(--red); }
+        .btn-report { color: var(--gold); }
         
-        .post-comments { margin-top: 10px; background: #181818; padding: 10px; border-radius: 8px; }
+        .post-comments { margin-top: 10px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; }
         .comment-item { display: flex; gap: 10px; margin-bottom: 8px; font-size: 13px; }
         .comment-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
-        .comment-text { color: #ccc; }
+        .comment-text { color: var(--text); opacity: 0.9; }
         .comment-form { display: flex; gap: 8px; margin-top: 10px; }
 
-        .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; }
+        .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
         .modal-bg.open { display: flex; }
-        .modal-box { background: var(--card); width: 90%; max-width: 400px; padding: 25px; border-radius: 16px; border: 1px solid var(--border); position: relative; max-height: 80vh; overflow-y: auto; }
-        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: #888; }
-        .config-section { border-top: 1px solid #333; margin-top: 15px; padding-top: 15px; }
+        .modal-box { background: var(--card); width: 90%; max-width: 400px; padding: 25px; border-radius: 16px; border: 1px solid var(--border); position: relative; max-height: 80vh; overflow-y: auto; color: var(--text); }
+        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: var(--text); opacity: 0.5; }
+        .config-section { border-top: 1px solid var(--border); margin-top: 15px; padding-top: 15px; }
+        .config-section h4 { margin-top: 0; color: var(--green); font-size: 14px; text-transform: uppercase; }
         .premium-border { border: 2px solid var(--gold) !important; }
         .admin-border { border: 2px solid var(--red) !important; }
-        .post-ad { border: 2px dashed #444; background: #000; text-align: center; }
+        .post-ad { border: 2px dashed var(--border); background: rgba(0,0,0,0.1); text-align: center; }
     </style>
 </head>
 <body>
@@ -77,8 +92,8 @@
     <header>
         <div class="logo">Animals <span>Picture</span></div>
         <div class="header-actions">
-            <button class="btn-icon btn-premium" onclick="abrirModal('modalPremium')">💎</button>
-            <button class="btn-icon" onclick="abrirModal('modalConfig')">⚙️</button>
+            <button class="btn-icon btn-premium" onclick="abrirModal('modalPremium')" title="Premium">💎</button>
+            <button class="btn-icon" onclick="abrirModal('modalConfig')" title="Config">⚙️</button>
             <div id="googleBtn"></div>
             <div class="user-mini" id="loggedArea" onclick="abrirModal('modalPerfil')" style="display:none;">
                 <img id="headerImg" src="" alt="Eu">
@@ -87,40 +102,30 @@
     </header>
 
     <nav id="topicBar" class="topic-bar">
-        <button class="topic-btn active" onclick="filtrarFeed('Tudo', this)">Tudo</button>
+        <button class="topic-btn active" onclick="filtrarFeed('Tudo', this)" data-i18n="all">Tudo</button>
     </nav>
 
     <main>
         <div class="static-content">
-            <h2>Bem-vindo à Animals Picture</h2>
-            <p>Animals Picture é a comunidade online líder dedicada aos amantes de animais. Aqui você pode compartilhar fotos dos seus pets, descobrir novas raças e interagir com outros donos apaixonados.</p>
-            <br>
-            <h3>Nossa Missão</h3>
-            <p>Conectar pessoas através do amor pelos animais, criando um ambiente seguro e divertido para compartilhar momentos especiais de cães, gatos, pássaros e muito mais.</p>
-            <br>
-            <h3>Regras da Comunidade</h3>
-            <ul>
-                <li>Respeito mútuo entre todos os membros.</li>
-                <li>Apenas fotos de animais são permitidas.</li>
-                <li>Conteúdo impróprio será removido imediatamente.</li>
-            </ul>
+            <h2 data-i18n="welcomeTitle">Bem-vindo à Animals Picture</h2>
+            <p data-i18n="welcomeDesc">Animals Picture é a comunidade líder para amantes de animais. Compartilhe fotos, descubra raças e faça amigos.</p>
         </div>
 
         <div id="postBox" class="card" style="display:none;">
-            <h3>Nova Publicação 🐾</h3>
+            <h3 data-i18n="newPost">Nova Publicação 🐾</h3>
             <form onsubmit="publicar(event)">
-                <textarea id="descPost" rows="2" placeholder="Escreva algo..." required></textarea>
+                <textarea id="descPost" rows="2" required></textarea>
                 <div style="display:flex; gap:10px; margin:10px 0;">
                     <select id="catSelect" required onchange="carregarSub()"><option value="">Categoria...</option></select>
                     <select id="subSelect" disabled required><option value="">Raça...</option></select>
                 </div>
                 <label class="file-upload-label">
                     <input type="file" id="fileInput" accept="image/*" capture="environment" style="display:none;" onchange="lerArquivo(this)">
-                    <span style="font-size:20px;">📸</span><span>Câmera / Galeria</span>
+                    <span style="font-size:20px;">📸</span><span data-i18n="cameraBtn">Câmera / Galeria</span>
                 </label>
                 <img id="previewUpload" src="">
                 <input type="hidden" id="finalImageBase64">
-                <button class="btn-green">Publicar</button>
+                <button class="btn-green" data-i18n="publishBtn">Publicar</button>
                 <div id="limitDisplay" style="font-size:12px; color:#888; margin-top:5px; text-align:center;"></div>
             </form>
         </div>
@@ -128,16 +133,68 @@
         <div id="feed"></div>
 
         <div class="footer-legal">
-            <p>&copy; 2024 Animals Picture. Todos os direitos reservados.</p>
-            <p>Política de Privacidade | Termos de Uso | Diretrizes da Comunidade</p>
+            <p>&copy; 2024 Animals Picture. <span data-i18n="rights">Todos os direitos reservados.</span></p>
         </div>
     </main>
 
-    <div id="modalPremium" class="modal-bg"><div class="modal-box"><span class="close-btn" onclick="fecharModal('modalPremium')">&times;</span><h2 style="color:var(--gold)">Premium 💎</h2><p>R$ 2,99 / mês</p><button class="btn-green" style="background:var(--gold); color:black;" onclick="assinarPremium()">Assinar Agora</button></div></div>
-    <div id="modalPerfil" class="modal-bg"><div class="modal-box"><span class="close-btn" onclick="fecharModal('modalPerfil')">&times;</span><h3>Perfil</h3><img id="previewImg" src="" style="width:80px; height:80px; border-radius:50%; margin:10px auto; display:block; object-fit:cover;"><input type="text" id="editNome" placeholder="Nome"><input type="text" id="editFoto" placeholder="URL da Foto" oninput="atualizarPreview()"><button class="btn-green" onclick="salvarPerfil()">Salvar</button></div></div>
-    <div id="modalConfig" class="modal-bg"><div class="modal-box"><span class="close-btn" onclick="fecharModal('modalConfig')">&times;</span><h3>Configurações</h3><div class="config-section"><h4>Suporte</h4><a href="mailto:animalspicturehelp@gmail.com" style="color:var(--green)">animalspicturehelp@gmail.com</a></div><div class="config-section"><h4>Dados Locais</h4><button class="btn-green" style="background:#444;" onclick="limparDados()">🗑️ Limpar Todos os Posts</button></div><div class="config-section"><p style="font-size:12px;">Logado: <b id="userEmailDisplay">---</b></p><button class="btn-green" style="background:var(--red);" onclick="logout()">Sair</button></div></div></div>
+    <div id="modalPremium" class="modal-bg"><div class="modal-box"><span class="close-btn" onclick="fecharModal('modalPremium')">&times;</span><h2 style="color:var(--gold)">Premium 💎</h2><p>R$ 2,99 / <span data-i18n="month">mês</span></p><button class="btn-green" style="background:var(--gold); color:black;" onclick="assinarPremium()" data-i18n="subscribe">Assinar Agora</button></div></div>
+    
+    <div id="modalPerfil" class="modal-bg"><div class="modal-box"><span class="close-btn" onclick="fecharModal('modalPerfil')">&times;</span><h3 data-i18n="profile">Perfil</h3><img id="previewImg" src="" style="width:80px; height:80px; border-radius:50%; margin:10px auto; display:block; object-fit:cover;"><input type="text" id="editNome" placeholder="Nome"><input type="text" id="editFoto" placeholder="URL da Foto" oninput="atualizarPreview()"><button class="btn-green" onclick="salvarPerfil()" data-i18n="save">Salvar</button></div></div>
+    
+    <div id="modalConfig" class="modal-bg">
+        <div class="modal-box">
+            <span class="close-btn" onclick="fecharModal('modalConfig')">&times;</span>
+            <h3 data-i18n="config">Configurações</h3>
+            
+            <div class="config-section">
+                <h4 data-i18n="lang">Idioma</h4>
+                <select id="selectIdioma" onchange="mudarIdioma(this.value)">
+                    <option value="pt">Português</option>
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                </select>
+            </div>
+
+            <div class="config-section">
+                <h4 data-i18n="theme">Tema</h4>
+                <select id="selectTema" onchange="mudarTema(this.value)">
+                    <option value="dark">Escuro (Dark)</option>
+                    <option value="light">Claro (Light)</option>
+                </select>
+            </div>
+
+            <div class="config-section"><h4 data-i18n="support">Suporte</h4><a href="mailto:animalspicturehelp@gmail.com" style="color:var(--green)">animalspicturehelp@gmail.com</a></div>
+            <div class="config-section"><h4 data-i18n="localData">Dados Locais</h4><button class="btn-green" style="background:#444;" onclick="limparDados()" data-i18n="clearData">🗑️ Limpar Tudo</button></div>
+            <div class="config-section"><p style="font-size:12px;">Log: <b id="userEmailDisplay">---</b></p><button class="btn-green" style="background:var(--red);" onclick="logout()" data-i18n="logout">Sair</button></div>
+        </div>
+    </div>
 
     <script>
+        // === TRADUÇÕES ===
+        const TRANSLATIONS = {
+            pt: {
+                all: "Tudo", welcomeTitle: "Bem-vindo à Animals Picture", welcomeDesc: "Animals Picture é a comunidade líder para amantes de animais.",
+                newPost: "Nova Publicação 🐾", cameraBtn: "Câmera / Galeria", publishBtn: "Publicar", rights: "Todos os direitos reservados.",
+                month: "mês", subscribe: "Assinar Agora", profile: "Perfil", save: "Salvar", config: "Configurações",
+                lang: "Idioma", theme: "Tema", support: "Suporte", localData: "Dados Locais", clearData: "🗑️ Limpar Tudo", logout: "Sair",
+                catPlace: "Categoria...", racePlace: "Raça...", descPlace: "Escreva algo...", delete: "Excluir", report: "Denunciar"
+            },
+            en: {
+                all: "All", welcomeTitle: "Welcome to Animals Picture", welcomeDesc: "Animals Picture is the leading community for animal lovers.",
+                newPost: "New Post 🐾", cameraBtn: "Camera / Gallery", publishBtn: "Publish", rights: "All rights reserved.",
+                month: "month", subscribe: "Subscribe Now", profile: "Profile", save: "Save", config: "Settings",
+                lang: "Language", theme: "Theme", support: "Support", localData: "Local Data", clearData: "🗑️ Clear All", logout: "Logout",
+                catPlace: "Category...", racePlace: "Breed...", descPlace: "Write something...", delete: "Delete", report: "Report"
+            },
+            es: {
+                all: "Todo", welcomeTitle: "Bienvenido a Animals Picture", welcomeDesc: "Animals Picture es la comunidad líder para amantes de los animales.",
+                newPost: "Nueva Publicación 🐾", cameraBtn: "Cámara / Galería", publishBtn: "Publicar", rights: "Todos los derechos reservados.",
+                month: "mes", subscribe: "Suscribirse", profile: "Perfil", save: "Guardar", config: "Configuración",
+                lang: "Idioma", theme: "Tema", support: "Soporte", localData: "Datos Locales", clearData: "🗑️ Borrar Todo", logout: "Cerrar Sesión",
+                catPlace: "Categoría...", racePlace: "Raza...", descPlace: "Escribe algo...", delete: "Eliminar", report: "Reportar"
+            }
+        };
+
         const CATEGORIAS = {
             "Cães": ["Vira-lata", "Labrador", "Poodle", "Bulldog", "Golden", "Pastor Alemão", "Shih Tzu", "Yorkshire", "Pug", "Rottweiler", "Husky", "Pinscher", "Beagle", "Pitbull"],
             "Gatos": ["Vira-lata", "Siamês", "Persa", "Maine Coon", "Sphynx", "Angorá", "Bengal", "Ragdoll"],
@@ -148,13 +205,46 @@
         const LIMITE = 29;
         let usuario = { nome: "", foto: "", email: "", premium: false };
         let postsHoje = 0, contadorSessao = 0;
+        let idiomaAtual = localStorage.getItem('app_lang') || 'pt';
 
         window.onload = function() {
             google.accounts.id.initialize({ client_id: "1011026636052-883kh3h1md3m98tpvgvm5gqlie40lecc.apps.googleusercontent.com", callback: handleLogin });
             google.accounts.id.renderButton(document.getElementById("googleBtn"), { theme: "outline", size: "large", type: "icon" });
+            
+            // Carrega Tema e Idioma Salvos
+            const temaSalvo = localStorage.getItem('app_theme') || 'dark';
+            mudarTema(temaSalvo);
+            document.getElementById('selectTema').value = temaSalvo;
+            
+            mudarIdioma(idiomaAtual);
+
             carregarDados(); initCategorias(); renderizarFeed();
         };
 
+        // === IDIOMA & TEMA ===
+        function mudarIdioma(lang) {
+            idiomaAtual = lang;
+            localStorage.setItem('app_lang', lang);
+            document.getElementById('selectIdioma').value = lang;
+            
+            const t = TRANSLATIONS[lang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const k = el.getAttribute('data-i18n');
+                if(t[k]) el.innerText = t[k];
+            });
+            document.getElementById('descPost').placeholder = t.descPlace;
+            document.getElementById('catSelect').options[0].text = t.catPlace;
+            document.getElementById('subSelect').options[0].text = t.racePlace;
+            renderizarFeed(); // Atualiza botões do feed
+        }
+
+        function mudarTema(tema) {
+            if(tema === 'light') document.body.classList.add('light-theme');
+            else document.body.classList.remove('light-theme');
+            localStorage.setItem('app_theme', tema);
+        }
+
+        // === BANCO DE DADOS ===
         function getDB() { return JSON.parse(localStorage.getItem('db_posts_v3') || '[]'); }
         function saveDB(posts) { try { localStorage.setItem('db_posts_v3', JSON.stringify(posts)); } catch(e) { alert("Memória cheia!"); } }
 
@@ -162,10 +252,12 @@
             const feed = document.getElementById('feed');
             feed.innerHTML = '';
             
-            // Post Demo (Agora conta como conteúdo)
+            const t = TRANSLATIONS[idiomaAtual];
+
+            // Post Demo
             criarPostHTML({
                 id: 'demo', nome: 'Admin', foto: 'https://ui-avatars.com/api/?name=Admin', 
-                desc: 'Bem-vindo! Este é o primeiro post oficial da Animals Picture.', 
+                desc: 'Hello World! 🌍 Bem-vindo à V21.', 
                 img: 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=600&q=80', 
                 cat: 'Sistema', sub: 'Info', admin: true, likes: []
             });
@@ -186,9 +278,11 @@
             let border = (post.admin || post.email === ADMIN_EMAIL) ? "admin-border" : (post.premium ? "premium-border" : "");
 
             const isOwner = (usuario.email && post.email === usuario.email) || isAdmin();
+            const t = TRANSLATIONS[idiomaAtual];
+            
             let actionBtn = isOwner 
-                ? `<button class="action-btn btn-delete" onclick="deletarPost('${post.id}')">🗑️ Excluir</button>`
-                : `<button class="action-btn" style="color:var(--gold)" onclick="denunciarPost('${post.id}')">⚠️ Denunciar</button>`;
+                ? `<button class="action-btn btn-delete" onclick="deletarPost('${post.id}')">🗑️ ${t.delete}</button>`
+                : `<button class="action-btn btn-report" onclick="denunciarPost('${post.id}')">⚠️ ${t.report}</button>`;
 
             const liked = post.likes.includes(usuario.email);
             const likeIcon = liked ? "❤️" : "🤍";
@@ -202,7 +296,7 @@
                     </div>
                 </div>
                 <p>${post.desc}</p>
-                <span style="font-size:11px; background:#333; padding:4px 8px; border-radius:4px;">${post.cat} > ${post.sub}</span>
+                <span style="font-size:11px; opacity:0.7; border:1px solid var(--border); padding:2px 6px; border-radius:4px;">${post.cat} > ${post.sub}</span>
                 <img src="${post.img}" loading="lazy">
                 
                 <div class="post-actions-bar">
@@ -214,9 +308,9 @@
                     <div class="comments-list" id="list-${post.id}"></div>
                     ${usuario.email ? 
                     `<div class="comment-form">
-                        <input type="text" class="comment-text" placeholder="Comente..." id="input-${post.id}" style="width:100%; border:none; padding:8px; border-radius:4px;">
+                        <input type="text" class="comment-text" placeholder="..." id="input-${post.id}" style="width:100%;">
                         <button class="btn-green" style="margin:0; padding:5px 10px;" onclick="addComentario('${post.id}')">></button>
-                    </div>` : '<small>Logue para interagir.</small>'}
+                    </div>` : ''}
                 </div>
             `;
             document.getElementById('feed').appendChild(div);
@@ -224,8 +318,8 @@
         }
 
         function toggleLike(id) {
-            if (!usuario.email) return alert("Faça login!");
-            if (id === 'demo') return alert("Exemplo.");
+            if (!usuario.email) return alert("Login necessário!");
+            if (id === 'demo') return;
             let posts = getDB();
             let idx = posts.findIndex(p => p.id === id);
             if (idx === -1) return;
@@ -247,7 +341,7 @@
             const img = document.getElementById('finalImageBase64').value;
             const cat = document.getElementById('catSelect').value;
             const sub = document.getElementById('subSelect').value;
-            if(!img || !cat) return alert("Complete tudo!");
+            if(!img || !cat) return alert("Foto/Categoria?");
 
             const novo = { id: 'post_'+Date.now(), nome: usuario.nome, foto: usuario.foto, email: usuario.email, desc, img, cat, sub, likes: [], date: new Date().toISOString() };
             const posts = getDB();
@@ -265,14 +359,14 @@
         }
 
         function deletarPost(id) {
-            if(!confirm("Apagar?")) return;
+            if(!confirm("?")) return;
             let posts = getDB();
             posts = posts.filter(p => p.id !== id);
             saveDB(posts);
             renderizarFeed();
         }
 
-        function denunciarPost(id) { alert("Denúncia enviada!"); }
+        function denunciarPost(id) { alert("Reportado/Reported/Reportado!"); }
 
         function lerArquivo(input) {
             if (input.files && input.files[0]) {

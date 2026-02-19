@@ -1,7 +1,10 @@
 /* ===================================================================
-   ANIMALS PICTURE - JAVASCRIPT V21
+   ANIMALS PICTURE - JAVASCRIPT V22
    Rede social para amantes de animais
+   Backend: servidor Python local em http://localhost:5000
    =================================================================== */
+
+const API = 'http://localhost:5000/api';
 
 // === VARIÁVEIS GLOBAIS ===
 let usuario = { nome: "", foto: "", email: "", premium: false };
@@ -164,25 +167,43 @@ function mudarTema(tema) {
     localStorage.setItem('app_theme', tema);
 }
 
-// === BANCO DE DADOS (LOCAL STORAGE) ===
-function getDB() {
-    return JSON.parse(localStorage.getItem('db_posts_v3') || '[]');
+// === BANCO DE DADOS (SERVIDOR LOCAL) ===
+async function getDB() {
+    try {
+        const res = await fetch(`${API}/posts`);
+        return await res.json();
+    } catch (e) {
+        mostrarToast('⚠️ Servidor offline! Inicie o start.bat', 'error');
+        return [];
+    }
 }
 
-function saveDB(posts) {
+async function savePostDB(post) {
     try {
-        localStorage.setItem('db_posts_v3', JSON.stringify(posts));
+        const res = await fetch(`${API}/posts`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(post)
+        });
+        return res.ok;
     } catch (e) {
-        mostrarToast("Erro: Memória cheia! Exporte seus dados.", 'error');
+        mostrarToast('⚠️ Servidor offline! Inicie o start.bat', 'error');
+        return false;
+    }
+}
+
+async function deletePostDB(id) {
+    try {
+        await fetch(`${API}/posts/${id}`, { method: 'DELETE' });
+    } catch (e) {
+        mostrarToast('⚠️ Servidor offline!', 'error');
     }
 }
 
 // === RENDERIZAÇÃO DE POSTS ===
-function renderizarFeed() {
+async function renderizarFeed() {
     const feed = document.getElementById('feed');
     feed.innerHTML = '';
-
-    const t = TRANSLATIONS[idiomaAtual];
 
     // Post Demo do Admin
     criarPostHTML({
@@ -198,8 +219,8 @@ function renderizarFeed() {
         comments: []
     });
 
-    // Posts dos usuários
-    const posts = getDB();
+    // Posts do servidor
+    const posts = await getDB();
     posts.forEach(p => criarPostHTML(p));
 }
 
@@ -275,7 +296,7 @@ function criarPostHTML(post) {
 }
 
 // === POSTS - CRIAÇÃO E GERENCIAMENTO ===
-function publicar(e) {
+async function publicar(e) {
     e.preventDefault();
 
     const t = TRANSLATIONS[idiomaAtual];
@@ -313,10 +334,10 @@ function publicar(e) {
         premium: usuario.premium
     };
 
-    const posts = getDB();
-    posts.unshift(novo);
-    saveDB(posts);
-    renderizarFeed();
+    const ok = await savePostDB(novo);
+    if (!ok) return;
+
+    await renderizarFeed();
 
     // Atualiza contadores
     if (!usuario.premium && !isAdmin()) {
@@ -351,10 +372,8 @@ async function deletarPost(id) {
 
     if (!confirmar) return;
 
-    let posts = getDB();
-    posts = posts.filter(p => p.id !== id);
-    saveDB(posts);
-    renderizarFeed();
+    await deletePostDB(id);
+    await renderizarFeed();
 
     mostrarToast(t.postDeleted, 'success');
 }
@@ -365,7 +384,7 @@ function denunciarPost(id) {
 }
 
 // === LIKES ===
-function toggleLike(id) {
+async function toggleLike(id) {
     if (!usuario.email) {
         mostrarAlerta('Login Necessário', TRANSLATIONS[idiomaAtual].loginRequired, 'error');
         return;
@@ -373,27 +392,22 @@ function toggleLike(id) {
 
     if (id === 'demo') return;
 
-    let posts = getDB();
-    let idx = posts.findIndex(p => p.id === id);
-    if (idx === -1) return;
-
-    let post = posts[idx];
-    if (!post.likes) post.likes = [];
-
-    if (post.likes.includes(usuario.email)) {
-        post.likes = post.likes.filter(e => e !== usuario.email);
-    } else {
-        post.likes.push(usuario.email);
+    try {
+        await fetch(`${API}/posts/${id}/like`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: usuario.email })
+        });
+        await renderizarFeed();
+    } catch (e) {
+        mostrarToast('⚠️ Servidor offline!', 'error');
     }
-
-    posts[idx] = post;
-    saveDB(posts);
-    renderizarFeed();
 }
 
 // === COMENTÁRIOS ===
-function addComentario(id) {
-    const txt = document.getElementById(`input-${id}`).value.trim();
+async function addComentario(id) {
+    const input = document.getElementById(`input-${id}`);
+    const txt = input.value.trim();
     if (!txt) return;
 
     const novo = {
@@ -403,32 +417,44 @@ function addComentario(id) {
         date: new Date().toISOString()
     };
 
-    let all = JSON.parse(localStorage.getItem('comments_v3') || '{}');
-    if (!all[id]) all[id] = [];
-    all[id].push(novo);
-    localStorage.setItem('comments_v3', JSON.stringify(all));
-
-    document.getElementById(`input-${id}`).value = '';
-    carregarComentarios(id);
+    try {
+        await fetch(`${API}/comments/${id}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(novo)
+        });
+        input.value = '';
+        carregarComentarios(id);
+    } catch (e) {
+        mostrarToast('⚠️ Servidor offline!', 'error');
+    }
 }
 
-function carregarComentarios(id) {
+async function carregarComentarios(id) {
     const list = document.getElementById(`list-${id}`);
     if (!list) return;
 
-    list.innerHTML = '';
-    let all = JSON.parse(localStorage.getItem('comments_v3') || '{}');
+    try {
+        const res = await fetch(`${API}/comments/${id}`);
+        const comments = await res.json();
 
-    if (all[id]) {
-        all[id].forEach(c => {
+        list.innerHTML = '';
+        comments.forEach(c => {
             const div = document.createElement('div');
             div.className = 'comment-item';
             div.innerHTML = `
-                <img src="${c.foto || avatarFallback(c.user)}" class="comment-avatar" alt="${c.user}">
-                <div><b>${c.user}</b>: ${escapeHtml(c.text)}</div>
+                <img src="${c.foto || avatarFallback(c.user)}" class="comment-avatar"
+                     onerror="this.src='${avatarFallback(c.user)}'"
+                     alt="${escapeHtml(c.user)}">
+                <div class="comment-content">
+                    <span class="comment-user">${escapeHtml(c.user)}</span>
+                    <span class="comment-text">${escapeHtml(c.text)}</span>
+                </div>
             `;
             list.appendChild(div);
         });
+    } catch (e) {
+        // servidor offline, silencioso
     }
 }
 

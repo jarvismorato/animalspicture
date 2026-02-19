@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: animalspicture
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn server:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+    disk:
+      name: data
+      mountPath: /data
+      sizeGB: 1

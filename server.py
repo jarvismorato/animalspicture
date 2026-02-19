@@ -18,7 +18,14 @@ app = Flask(__name__, static_folder='.')
 CORS(app)
 
 BASE_DIR  = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR  = os.path.join(BASE_DIR, 'data')
+
+# Em producao (Render), usa o disco persistente montado em /data
+# Em desenvolvimento local, usa a pasta ./data
+if os.path.isdir('/data'):
+    DATA_DIR = '/data'
+else:
+    DATA_DIR  = os.path.join(BASE_DIR, 'data')
+
 POSTS_FILE    = os.path.join(DATA_DIR, 'posts.json')
 COMMENTS_FILE = os.path.join(DATA_DIR, 'comments.json')
 

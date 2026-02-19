@@ -4,7 +4,7 @@
    Backend: servidor Python local em http://localhost:5000
    =================================================================== */
 
-const API = 'http://localhost:5000/api';
+const API = '/api';
 
 // === VARIÁVEIS GLOBAIS ===
 let usuario = { nome: "", foto: "", email: "", premium: false };

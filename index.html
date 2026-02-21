@@ -8,7 +8,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <!-- SEO Primary -->
-    <title>Animals Picture - Rede Social para Amantes de Animais | V21</title>
+    <title>Animals Picture - Rede Social para Amantes de Animais | V23</title>
     <meta name="description"
         content="A melhor rede social para amantes de animais! Compartilhe fotos de cães, gatos, pássaros e mais. Descubra raças, conecte-se com outros tutores e faça parte de nossa comunidade.">
     <meta name="keywords"
@@ -43,6 +43,14 @@
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="logo.png">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Preconnect para Performance -->
     <link rel="preconnect" href="https://accounts.google.com">
@@ -98,6 +106,15 @@
             aria-pressed="true">Tudo</button>
     </nav>
 
+    <!-- Barra de Ordenação -->
+    <div class="sort-bar">
+        <label for="sortSelect" class="sort-label" data-i18n="sortBy">Ordenar por:</label>
+        <select id="sortSelect" class="sort-select" aria-label="Ordenar feed">
+            <option value="newest" data-i18n="sortNewest">Mais Recentes</option>
+            <option value="likes" data-i18n="sortLikes">Mais Curtidos</option>
+        </select>
+    </div>
+
     <main id="main-content" role="main">
         <div class="static-content">
             <h2 data-i18n="welcomeTitle">Bem-vindo à Animals Picture</h2>
@@ -143,6 +160,11 @@
         </div>
 
         <div id="feed" role="feed" aria-label="Feed de publicações"></div>
+
+        <!-- Botão Carregar Mais -->
+        <button id="loadMoreBtn" class="btn-load-more" style="display:none;" data-i18n="loadMore">
+            Carregar Mais
+        </button>
 
         <footer class="footer-legal" role="contentinfo">
             <p>&copy; 2024-2026 Animals Picture. <span data-i18n="rights">Todos os direitos reservados.</span></p>

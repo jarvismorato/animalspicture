@@ -72,7 +72,15 @@ const TRANSLATIONS = {
         "Cães": "Cães",
         "Gatos": "Gatos",
         "Pássaros": "Pássaros",
-        "Outros": "Outros"
+        "Outros": "Outros",
+        // Novos
+        sortBy: "Ordenar por:",
+        sortNewest: "Mais Recentes",
+        sortLikes: "Mais Curtidos",
+        loadMore: "Carregar Mais",
+        share: "Compartilhar",
+        commentPlace: "Comentar...",
+        newPosts: "novo(s) post(s)"
     },
     en: {
         all: "All",
@@ -116,7 +124,15 @@ const TRANSLATIONS = {
         imageTooBig: "Image too large! Max 2MB.",
         exportSuccess: "Data exported successfully!",
         importSuccess: "Data imported successfully!",
-        importError: "Error importing data. Check the file."
+        importError: "Error importing data. Check the file.",
+        // New
+        sortBy: "Sort by:",
+        sortNewest: "Newest",
+        sortLikes: "Most Liked",
+        loadMore: "Load More",
+        share: "Share",
+        commentPlace: "Comment...",
+        newPosts: "new post(s)"
     },
     es: {
         all: "Todo",
@@ -160,7 +176,15 @@ const TRANSLATIONS = {
         "Cães": "Perros",
         "Gatos": "Gatos",
         "Pássaros": "Pájaros",
-        "Outros": "Otros"
+        "Outros": "Otros",
+        // Nuevos
+        sortBy: "Ordenar por:",
+        sortNewest: "Más Recientes",
+        sortLikes: "Más Gustados",
+        loadMore: "Cargar Más",
+        share: "Compartir",
+        commentPlace: "Comentar...",
+        newPosts: "nueva(s) publicación(es)"
     }
 };
 

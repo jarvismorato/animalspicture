@@ -1,5 +1,5 @@
 /* ===================================================================
-   ANIMALS PICTURE - JAVASCRIPT V22
+   ANIMALS PICTURE - JAVASCRIPT V23
    Rede social para amantes de animais
    Backend: servidor Python local em http://localhost:5000
    =================================================================== */
@@ -11,6 +11,12 @@ let usuario = { nome: "", foto: "", email: "", premium: false };
 let postsHoje = 0;
 let contadorSessao = 0;
 let idiomaAtual = localStorage.getItem('app_lang') || 'pt';
+let currentPage = 1;
+let hasMorePosts = false;
+let currentSort = 'newest';
+let lastPostCount = 0;
+let pollingInterval = null;
+let isLoadingFeed = false;
 
 // === INICIALIZAÇÃO ===
 window.onload = function () {
@@ -41,6 +47,24 @@ window.onload = function () {
 
     // Event listeners
     document.getElementById('searchInput')?.addEventListener('input', buscarPosts);
+
+    // Sorting
+    document.getElementById('sortSelect')?.addEventListener('change', function () {
+        currentSort = this.value;
+        currentPage = 1;
+        renderizarFeed();
+    });
+
+    // Load More
+    document.getElementById('loadMoreBtn')?.addEventListener('click', carregarMais);
+
+    // Polling para novos posts (a cada 30s)
+    startPolling();
+
+    // Registra Service Worker para PWA
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(() => { });
+    }
 };
 
 // === AUTENTICAÇÃO ===
@@ -82,8 +106,6 @@ function carregarDados() {
 }
 
 async function logout() {
-    const t = TRANSLATIONS[idiomaAtual];
-
     const confirmar = await mostrarConfirm(
         'Sair da Conta',
         'Tem certeza que deseja sair? Seus dados locais serão mantidos.',
@@ -168,13 +190,22 @@ function mudarTema(tema) {
 }
 
 // === BANCO DE DADOS (SERVIDOR LOCAL) ===
-async function getDB() {
+function apiHeaders() {
+    const headers = { 'Content-Type': 'application/json' };
+    if (usuario.email) {
+        headers['X-User-Email'] = usuario.email;
+    }
+    return headers;
+}
+
+async function getDB(page = 1, sort = 'newest') {
     try {
-        const res = await fetch(`${API}/posts`);
-        return await res.json();
+        const res = await fetch(`${API}/posts?page=${page}&limit=10&sort=${sort}`);
+        const data = await res.json();
+        return data;
     } catch (e) {
         mostrarToast('⚠️ Servidor offline! Inicie o start.bat', 'error');
-        return [];
+        return { posts: [], total: 0, page: 1, hasMore: false };
     }
 }
 
@@ -182,7 +213,7 @@ async function savePostDB(post) {
     try {
         const res = await fetch(`${API}/posts`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: apiHeaders(),
             body: JSON.stringify(post)
         });
         return res.ok;
@@ -194,16 +225,73 @@ async function savePostDB(post) {
 
 async function deletePostDB(id) {
     try {
-        await fetch(`${API}/posts/${id}`, { method: 'DELETE' });
+        await fetch(`${API}/posts/${id}`, {
+            method: 'DELETE',
+            headers: apiHeaders()
+        });
     } catch (e) {
         mostrarToast('⚠️ Servidor offline!', 'error');
     }
 }
 
+async function uploadImage(base64Data) {
+    try {
+        const res = await fetch(`${API}/upload`, {
+            method: 'POST',
+            headers: apiHeaders(),
+            body: JSON.stringify({ image: base64Data })
+        });
+        if (res.ok) {
+            const data = await res.json();
+            return data.url;
+        }
+        return null;
+    } catch (e) {
+        mostrarToast('⚠️ Erro ao enviar imagem!', 'error');
+        return null;
+    }
+}
+
+// === SKELETON LOADING ===
+function mostrarSkeletons(count = 3) {
+    const feed = document.getElementById('feed');
+    for (let i = 0; i < count; i++) {
+        const div = document.createElement('div');
+        div.className = 'card post skeleton-card';
+        div.innerHTML = `
+            <div class="post-header">
+                <div class="post-user">
+                    <div class="skeleton skeleton-avatar"></div>
+                    <div class="skeleton skeleton-text" style="width: 120px;"></div>
+                </div>
+            </div>
+            <div class="skeleton skeleton-text" style="width: 90%; margin-top: 12px;"></div>
+            <div class="skeleton skeleton-text" style="width: 60%; margin-top: 8px;"></div>
+            <div class="skeleton skeleton-image"></div>
+            <div style="display:flex; gap:10px; margin-top:12px;">
+                <div class="skeleton skeleton-text" style="width: 60px;"></div>
+                <div class="skeleton skeleton-text" style="width: 80px;"></div>
+                <div class="skeleton skeleton-text" style="width: 70px;"></div>
+            </div>
+        `;
+        feed.appendChild(div);
+    }
+}
+
+function removerSkeletons() {
+    document.querySelectorAll('.skeleton-card').forEach(el => el.remove());
+}
+
 // === RENDERIZAÇÃO DE POSTS ===
 async function renderizarFeed() {
+    if (isLoadingFeed) return;
+    isLoadingFeed = true;
+
     const feed = document.getElementById('feed');
     feed.innerHTML = '';
+
+    // Mostra skeletons enquanto carrega
+    mostrarSkeletons(3);
 
     // Post Demo do Admin
     criarPostHTML({
@@ -217,14 +305,55 @@ async function renderizarFeed() {
         admin: true,
         likes: [],
         comments: []
-    });
+    }, true); // hidden = true until skeletons removed
 
-    // Posts do servidor
-    const posts = await getDB();
-    posts.forEach(p => criarPostHTML(p));
+    // Posts do servidor (paginados)
+    currentPage = 1;
+    const data = await getDB(1, currentSort);
+
+    // Remove skeletons
+    removerSkeletons();
+
+    // Mostra o demo post
+    const demoPost = feed.querySelector('[data-id="demo"]');
+    if (demoPost) demoPost.style.display = '';
+
+    data.posts.forEach(p => criarPostHTML(p));
+    hasMorePosts = data.hasMore;
+    lastPostCount = data.total;
+
+    // Mostra/esconde botão "Load More"
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    if (loadMoreBtn) {
+        loadMoreBtn.style.display = hasMorePosts ? 'block' : 'none';
+    }
+
+    isLoadingFeed = false;
 }
 
-function criarPostHTML(post) {
+async function carregarMais() {
+    if (!hasMorePosts || isLoadingFeed) return;
+    isLoadingFeed = true;
+
+    const btn = document.getElementById('loadMoreBtn');
+    if (btn) btn.textContent = '⏳ Carregando...';
+
+    currentPage++;
+    const data = await getDB(currentPage, currentSort);
+
+    data.posts.forEach(p => criarPostHTML(p));
+    hasMorePosts = data.hasMore;
+
+    if (btn) {
+        const t = TRANSLATIONS[idiomaAtual];
+        btn.textContent = t.loadMore || 'Carregar Mais';
+        btn.style.display = hasMorePosts ? 'block' : 'none';
+    }
+
+    isLoadingFeed = false;
+}
+
+function criarPostHTML(post, hidden = false) {
     if (!post.likes) post.likes = [];
     if (!post.comments) post.comments = [];
 
@@ -234,6 +363,8 @@ function criarPostHTML(post) {
     div.setAttribute('data-cat', post.cat);
     div.setAttribute('data-desc', post.desc.toLowerCase());
     div.setAttribute('data-user', post.nome.toLowerCase());
+
+    if (hidden) div.style.display = 'none';
 
     const userPic = post.foto || avatarFallback(post.nome);
     let badge = (post.admin || post.email === CONFIG.ADMIN_EMAIL)
@@ -259,22 +390,22 @@ function criarPostHTML(post) {
             <div class="post-user">
                 <img src="${userPic}" class="post-avatar ${border}" 
                      onerror="this.src='${avatarFallback(post.nome)}'"
-                     alt="${post.nome}">
-                <div><b>${post.nome}${badge}</b></div>
+                     alt="${escapeHtml(post.nome)}">
+                <div><b>${escapeHtml(post.nome)}${badge}</b></div>
             </div>
         </div>
         <p>${escapeHtml(post.desc)}</p>
         <span style="font-size:11px; opacity:0.7; border:1px solid var(--border); padding:2px 6px; border-radius:4px;">
-            ${post.cat} › ${post.sub}
+            ${escapeHtml(post.cat)} › ${escapeHtml(post.sub)}
         </span>
-        <img src="${post.img}" loading="lazy" alt="${post.desc}" onclick="abrirImagemFullscreen('${post.img}')">
+        <img src="${post.img}" loading="lazy" alt="${escapeHtml(post.desc)}" onclick="abrirImagemFullscreen('${post.img}')">
         
         <div class="post-actions-bar">
             <button class="action-btn ${likeClass}" onclick="toggleLike('${post.id}')" aria-label="Curtir">
                 ${likeIcon} ${post.likes.length}
             </button>
             <button class="action-btn" onclick="compartilharPost('${post.id}')" aria-label="Compartilhar">
-                🔗 Compartilhar
+                🔗 ${t.share || 'Compartilhar'}
             </button>
             ${actionBtn}
         </div>
@@ -282,10 +413,12 @@ function criarPostHTML(post) {
         <div class="post-comments">
             <div class="comments-list" id="list-${post.id}"></div>
             ${usuario.email ? `
-                <div class="comment-form">
-                    <input type="text" class="comment-text" placeholder="Comentar..." 
-                           id="input-${post.id}" aria-label="Escrever comentário">
-                    <button class="btn-green" onclick="addComentario('${post.id}')" aria-label="Enviar">›</button>
+                <div class="comment-input">
+                    <input type="text" placeholder="${t.commentPlace || 'Comentar...'}" 
+                           id="input-${post.id}" aria-label="Escrever comentário"
+                           maxlength="300">
+                    <button class="btn-green" onclick="addComentario('${post.id}')" aria-label="Enviar" 
+                            style="width: auto; margin-top: 0;">›</button>
                 </div>
             ` : ''}
         </div>
@@ -309,12 +442,26 @@ async function publicar(e) {
     }
 
     const desc = document.getElementById('descPost').value;
-    const img = document.getElementById('finalImageBase64').value;
+    const base64 = document.getElementById('finalImageBase64').value;
     const cat = document.getElementById('catSelect').value;
     const sub = document.getElementById('subSelect').value;
 
-    if (!img || !cat) {
+    if (!base64 || !cat) {
         mostrarToast(t.imageRequired, 'error');
+        return;
+    }
+
+    // Mostra loading
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = '⏳ Enviando...';
+    submitBtn.disabled = true;
+
+    // Upload da imagem como arquivo
+    const imgUrl = await uploadImage(base64);
+    if (!imgUrl) {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
         return;
     }
 
@@ -325,7 +472,7 @@ async function publicar(e) {
         foto: usuario.foto,
         email: usuario.email,
         desc: desc,
-        img: img,
+        img: imgUrl,
         cat: cat,
         sub: sub,
         likes: [],
@@ -335,6 +482,10 @@ async function publicar(e) {
     };
 
     const ok = await savePostDB(novo);
+
+    submitBtn.textContent = originalText;
+    submitBtn.disabled = false;
+
     if (!ok) return;
 
     await renderizarFeed();
@@ -395,7 +546,7 @@ async function toggleLike(id) {
     try {
         await fetch(`${API}/posts/${id}/like`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: apiHeaders(),
             body: JSON.stringify({ email: usuario.email })
         });
         await renderizarFeed();
@@ -410,6 +561,11 @@ async function addComentario(id) {
     const txt = input.value.trim();
     if (!txt) return;
 
+    if (txt.length > 300) {
+        mostrarToast('Comentário muito longo! Máximo 300 caracteres.', 'error');
+        return;
+    }
+
     const novo = {
         user: usuario.nome,
         text: txt,
@@ -420,7 +576,7 @@ async function addComentario(id) {
     try {
         await fetch(`${API}/comments/${id}`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: apiHeaders(),
             body: JSON.stringify(novo)
         });
         input.value = '';
@@ -562,10 +718,9 @@ function filtrarFeed(cat, btn) {
     const searchInput = document.getElementById('searchInput');
     if (searchInput) searchInput.value = '';
 
-    // Atualiza botões - corrige bug do "Tudo"
+    // Atualiza botões
     document.querySelectorAll('.topic-btn').forEach(b => {
         b.classList.remove('active');
-        // Atualiza aria-pressed
         b.setAttribute('aria-pressed', 'false');
     });
 
@@ -585,7 +740,6 @@ function filtrarFeed(cat, btn) {
 function compartilharPost(id) {
     const url = window.location.href + '#post-' + id;
 
-    // Tenta usar Web Share API (mobile)
     if (navigator.share) {
         navigator.share({
             title: 'Animals Picture',
@@ -593,7 +747,6 @@ function compartilharPost(id) {
             url: url
         }).catch(() => { });
     } else {
-        // Fallback: copia para clipboard
         navigator.clipboard.writeText(url).then(() => {
             mostrarToast('Link copiado! 🔗', 'success');
         });
@@ -676,9 +829,9 @@ async function assinarPremium() {
 }
 
 // === EXPORTAR/IMPORTAR DADOS ===
-function exportarDados() {
+async function exportarDados() {
     const data = {
-        posts: getDB(),
+        posts: (await getDB(1, 'newest')).posts,
         comments: JSON.parse(localStorage.getItem('comments_v3') || '{}'),
         user: usuario,
         version: CONFIG.VERSAO,
@@ -708,14 +861,6 @@ function importarDados() {
         reader.onload = (event) => {
             try {
                 const data = JSON.parse(event.target.result);
-
-                if (data.posts) {
-                    saveDB(data.posts);
-                }
-                if (data.comments) {
-                    localStorage.setItem('comments_v3', JSON.stringify(data.comments));
-                }
-
                 renderizarFeed();
                 mostrarToast(TRANSLATIONS[idiomaAtual].importSuccess, 'success');
             } catch (error) {
@@ -773,7 +918,7 @@ function mostrarConfirm(titulo, mensagem, opcoes = {}) {
         const {
             textoOk = 'Confirmar',
             textoCancelar = 'Cancelar',
-            tipoOk = 'normal' // 'normal', 'danger', 'premium'
+            tipoOk = 'normal'
         } = opcoes;
 
         const modal = document.createElement('div');
@@ -830,12 +975,29 @@ function mostrarAlerta(titulo, mensagem, tipo = 'info') {
 
     document.body.appendChild(modal);
 
-    // Fechar ao clicar fora
     modal.onclick = (e) => {
         if (e.target === modal) {
             modal.remove();
         }
     };
+}
+
+// === POLLING PARA NOVOS POSTS ===
+function startPolling() {
+    pollingInterval = setInterval(async () => {
+        try {
+            const res = await fetch(`${API}/posts/count`);
+            const data = await res.json();
+            if (lastPostCount > 0 && data.count > lastPostCount) {
+                const diff = data.count - lastPostCount;
+                const t = TRANSLATIONS[idiomaAtual];
+                mostrarToast(`🆕 ${diff} ${t.newPosts || 'novo(s) post(s)'}!`, 'info');
+                lastPostCount = data.count;
+            }
+        } catch (e) {
+            // silencioso
+        }
+    }, 30000);
 }
 
 // === UTILITÁRIOS ===
@@ -860,6 +1022,7 @@ function decodeJwt(token) {
 }
 
 function escapeHtml(text) {
+    if (!text) return '';
     const map = {
         '&': '&amp;',
         '<': '&lt;',
@@ -867,5 +1030,5 @@ function escapeHtml(text) {
         '"': '&quot;',
         "'": '&#039;'
     };
-    return text.replace(/[&<>"']/g, m => map[m]);
+    return String(text).replace(/[&<>"']/g, m => map[m]);
 }

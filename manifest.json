@@ -1,0 +1,25 @@
+{
+    "name": "Animals Picture",
+    "short_name": "Animals Pic",
+    "description": "Rede social para amantes de animais. Compartilhe fotos dos seus pets!",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#121212",
+    "theme_color": "#00C853",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "logo.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "logo.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": ["social", "photo"]
+}

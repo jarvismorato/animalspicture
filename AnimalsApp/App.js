@@ -8,6 +8,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { Feather, Ionicons } from '@expo/vector-icons';
+import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 
 import { Colors } from './src/constants/Colors';
 import { CATEGORIAS, TRANSLATIONS } from './src/constants/Data';
@@ -56,6 +57,24 @@ function MainApp() {
 
   const colors = Colors[theme] || Colors.dark;
   const t = TRANSLATIONS[lang] || TRANSLATIONS.pt;
+
+  const handleExternalPayment = () => {
+    // A url de exemplo de Stripe/Pix
+    const externalPaymentUrl = "https://buy.stripe.com/test_v2_mock_product";
+    Alert.alert(
+      "Tornar-se Premium",
+      "Você será redirecionado para a página segura de pagamento da Stripe ($2.99).\n\nApos pagar, envie um email com o comprovante para suporte@animalspicture.com para ativarmos sua conta!",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Pagar agora", onPress: () => {
+            // Usually Linking.openURL(externalPaymentUrl); 
+            Alert.alert('Simulação', 'Abrindo navegador no link: ' + externalPaymentUrl);
+          }
+        }
+      ]
+    );
+  }
 
   useEffect(() => {
     loadSavedData().catch(e => {
@@ -186,8 +205,15 @@ function MainApp() {
         date: new Date().toISOString(),
       };
 
-      const ok = await API.createPost(post, user.email);
-      if (ok) {
+      const res = await fetch(`${API.SERVER_URL}/api/posts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-User-Email': user.email },
+        body: JSON.stringify({ ...post, email: user.email })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
         Alert.alert('✅', t.postCreated);
         setDesc('');
         setSelectedCat('');
@@ -197,10 +223,18 @@ function MainApp() {
         setActiveTab('feed');
         loadFeed(true);
       } else {
-        throw new Error("Create post failed");
+        if (data.error === 'LIMIT_REACHED') {
+          // Trigger Paywall
+          Alert.alert('Limite Atingido!', data.message, [
+            { text: 'Assinar Premium', onPress: () => setActiveTab('premium') },
+            { text: 'Cancelar', style: 'cancel' }
+          ]);
+        } else {
+          throw new Error(data.message || "Create post failed");
+        }
       }
     } catch (e) {
-      Alert.alert('Erro', t.noServer);
+      Alert.alert('Erro', "Falha ao publicar. " + (e.message || t.noServer));
     } finally {
       setPublishing(false);
     }
@@ -234,8 +268,20 @@ function MainApp() {
           keyExtractor={item => item?.id || Math.random().toString()}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.green} />}
           showsVerticalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <PostCard post={item} colors={colors} t={t} userEmail={user.email} onLike={handleLike} onDelete={handleDelete} onComment={() => { }} />
+          renderItem={({ item, index }) => (
+            <>
+              <PostCard post={item} colors={colors} t={t} userEmail={user.email} onLike={handleLike} onDelete={handleDelete} onComment={() => { }} />
+              {/* Insert Ad every 5 posts */}
+              {(index + 1) % 5 === 0 && (
+                <View style={{ alignItems: 'center', marginVertical: 10 }}>
+                  <BannerAd
+                    unitId={TestIds.BANNER}
+                    size={BannerAdSize.BANNER}
+                    requestOptions={{ requestNonPersonalizedAdsOnly: true }}
+                  />
+                </View>
+              )}
+            </>
           )}
           ListFooterComponent={hasMore ? (
             <TouchableOpacity style={[styles.loadMoreBtn, { borderColor: colors.border }]} onPress={loadMore}>
@@ -317,6 +363,42 @@ function MainApp() {
         )}
       </ScrollView>
     </View>
+  );
+
+  const renderPremium = () => (
+    <ScrollView style={{ flex: 1, backgroundColor: colors.bg, padding: 20 }}>
+      <View style={{ alignItems: 'center', marginTop: 40, marginBottom: 40 }}>
+        <Text style={{ fontSize: 60, marginBottom: 10 }}>🌟</Text>
+        <Text style={{ color: colors.text, fontSize: 26, fontWeight: '800' }}>Animals Picture Premium</Text>
+        <Text style={{ color: colors.textSecondary, fontSize: 16, textAlign: 'center', marginTop: 10 }}>Destaque-se na comunidade e ilimitado.</Text>
+      </View>
+
+      <View style={[styles.settingsCard, { backgroundColor: colors.inputBg, borderColor: colors.border, padding: 24 }]}>
+        <Text style={{ color: colors.text, fontSize: 18, fontWeight: '700', marginBottom: 16 }}>Benefícios do Plano:</Text>
+
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16, gap: 12 }}>
+          <Ionicons name="checkmark-circle" size={24} color={colors.blue} />
+          <Text style={{ color: colors.text, fontSize: 16, flex: 1 }}>Selo de Verificado exclusivo do lado do nome</Text>
+        </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16, gap: 12 }}>
+          <Ionicons name="images" size={24} color={colors.blue} />
+          <Text style={{ color: colors.text, fontSize: 16, flex: 1 }}>Remoção do limite de 15 fotos por dia</Text>
+        </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <Ionicons name="heart" size={24} color={colors.red} />
+          <Text style={{ color: colors.text, fontSize: 16, flex: 1 }}>Ajude a manter nossos servidores no ar para os animais!</Text>
+        </View>
+      </View>
+
+      <TouchableOpacity style={[styles.greenBtn, { backgroundColor: colors.blue, paddingVertical: 18, marginTop: 10 }]} onPress={handleExternalPayment}>
+        <Text style={{ color: '#fff', fontWeight: '800', fontSize: 18 }}>Desbloquear por BRL 14.90</Text>
+        <Text style={{ color: '#fff', opacity: 0.8, fontSize: 12, marginTop: 4 }}>Pagamento único. Sem assinaturas.</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={{ marginTop: 24, padding: 10, alignItems: 'center' }} onPress={() => setActiveTab('feed')}>
+        <Text style={{ color: colors.textSecondary, fontSize: 16, fontWeight: '600' }}>Talvez mais tarde</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 
   const renderSettings = () => (
@@ -401,6 +483,7 @@ function MainApp() {
         {activeTab === 'feed' && renderFeed()}
         {activeTab === 'newPost' && renderNewPost()}
         {activeTab === 'settings' && renderSettings()}
+        {activeTab === 'premium' && renderPremium()}
       </View>
 
       {/* ── Bottom Tab Bar (X / Instagram style) ── */}
@@ -409,8 +492,8 @@ function MainApp() {
           {activeTab === 'feed' ? <Ionicons name="home" size={28} color={colors.text} /> : <Ionicons name="home-outline" size={28} color={colors.textSecondary} />}
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.tabItem} onPress={() => { }}>
-          <Ionicons name="search-outline" size={28} color={colors.textSecondary} />
+        <TouchableOpacity style={styles.tabItem} onPress={() => setActiveTab('premium')}>
+          {activeTab === 'premium' ? <Ionicons name="star" size={28} color={'#F59E0B'} /> : <Ionicons name="star-outline" size={28} color={colors.textSecondary} />}
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.tabItem} onPress={() => setActiveTab('newPost')}>

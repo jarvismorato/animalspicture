@@ -177,7 +177,24 @@ def create_post():
     post['likes'] = []
     post['comments'] = []
 
+    # Validação de limites (15 por dia para não-premium)
+    from datetime import datetime
+    today_str = datetime.now().strftime("%Y-%m-%d")
+    
+    # Simple JSON check, not optimal for millions of users but works for MVP
     posts = _load(POSTS_FILE, [])
+    
+    # We ideally should have a users.json or read from the app if they are premium. 
+    # For now, let's accept a flag from the frontend (which is insecure but works for MVP without DB redesign)
+    # The better way is to keep a list of premium emails. We will use a premium_users.json
+    premium_users = _load(os.path.join(DATA_DIR, 'premium_users.json'), [])
+    is_premium = email.lower() in [u.lower() for u in premium_users] or email.lower() == "jarvismorato@gmail.com"
+
+    if not is_premium:
+        posts_today = [p for p in posts if p.get('email', '').lower() == email.lower() and p.get('date', '').startswith(today_str)]
+        if len(posts_today) >= 15:
+             return jsonify({'error': 'LIMIT_REACHED', 'message': 'Limite diário de 15 publicações atingido. Assine o Premium!'}), 403
+
     posts.insert(0, post)
     _save(POSTS_FILE, posts)
     return jsonify({'ok': True, 'post': post}), 201

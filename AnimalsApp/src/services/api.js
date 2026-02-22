@@ -1,4 +1,4 @@
-let SERVER_URL = 'http://127.0.0.1:5000'; // Default fallback
+let SERVER_URL = 'https://animalsapi.onrender.com'; // Default global fallback, can be changed via settings
 
 export const setServerUrl = (url) => {
     if (url) {

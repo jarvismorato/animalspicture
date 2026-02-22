@@ -275,11 +275,21 @@ if __name__ == '__main__':
 
     print("=" * 50)
     print("  Animals Picture - Servidor V2 iniciado!")
-    print("  Acesse: http://localhost:5000")
+    print("  Web:    http://localhost:5000")
+    try:
+        import socket
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        local_ip = s.getsockname()[0]
+        s.close()
+        print(f"  Mobile: http://{local_ip}:5000")
+    except Exception:
+        pass
     print("  Pressione Ctrl+C para parar")
     print("=" * 50)
 
     if not no_browser:
         threading.Timer(1.0, open_browser).start()
 
-    app.run(host='127.0.0.1', port=5000, debug=False)
+    app.run(host='0.0.0.0', port=5000, debug=False)
+

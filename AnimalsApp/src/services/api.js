@@ -1,4 +1,4 @@
-let SERVER_URL = 'https://animalsapi.onrender.com'; // Default global fallback, can be changed via settings
+let SERVER_URL = 'https://animalspicture.onrender.com'; // Live global server
 
 export const setServerUrl = (url) => {
     if (url) {

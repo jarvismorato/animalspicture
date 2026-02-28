@@ -147,6 +147,14 @@ def get_posts():
     end = start + limit
     paginated = posts[start:end]
 
+    # Attach premium flag to posts
+    premium_users = _load(os.path.join(DATA_DIR, 'premium_users.json'), [])
+    premium_emails = [u.lower() for u in premium_users] + ["jarvismorato@gmail.com"]
+
+    for post in paginated:
+        post_email = post.get('email', '').lower()
+        post['is_premium'] = post_email in premium_emails
+
     return jsonify({
         'posts': paginated,
         'total': total,

@@ -32,7 +32,8 @@ export default function PostCard({ post, colors, t, userEmail, onLike, onDelete,
                     <View>
                         <View style={styles.nameRow}>
                             <Text style={[styles.name, { color: colors.text }]}>{post.nome}</Text>
-                            {post.admin && <Ionicons name="checkmark-circle" size={14} color={colors.blue} />}
+                            {post.is_premium && <Ionicons name="checkmark-circle" size={16} color={colors.blue} />}
+                            {post.admin && <Ionicons name="shield-checkmark" size={14} color={colors.blue} />}
                         </View>
                         <Text style={[styles.date, { color: colors.textSecondary }]}>
                             {post.date ? new Date(post.date).toLocaleDateString() : 'Recent'}

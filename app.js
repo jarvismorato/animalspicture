@@ -377,16 +377,53 @@ function criarPostHTML(post, hidden = false) {
     const isOwner = (usuario.email && post.email === usuario.email) || isAdmin();
     const t = TRANSLATIONS[idiomaAtual];
 
-    let actionBtn = isOwner
-        ? `<button class="action-btn btn-delete" onclick="deletarPost('${post.id}')" aria-label="${t.delete}">🗑️ ${t.delete}</button>`
-        : `<button class="action-btn btn-report" onclick="denunciarPost('${post.id}')" aria-label="${t.report}">⚠️ ${t.report}</button>`;
+   let actionBtn = isOwner
+        ? `<button class="action-btn btn-delete" onclick="deletarPost('${post.id}')" title="${t.delete}"><span class="material-symbols-rounded">delete</span></button>`
+        : `<button class="action-btn btn-report" onclick="denunciarPost('${post.id}')" title="${t.report}"><span class="material-symbols-rounded">flag</span></button>`;
 
     const liked = post.likes.includes(usuario.email);
-    const likeIcon = liked ? "❤️" : "🤍";
+    const likeIcon = liked ? "favorite" : "favorite_border";
     const likeClass = liked ? "btn-like liked" : "btn-like";
 
     div.innerHTML = `
         <div class="post-header">
+            <div class="post-user">
+                <img src="${userPic}" class="post-avatar ${border}" onerror="this.src='${avatarFallback(post.nome)}'">
+                <div style="display: flex; flex-direction: column;">
+                    <span style="font-weight: bold; font-size: 15px; display: flex; align-items: center;">${escapeHtml(post.nome)}${badge}</span>
+                    <span style="font-size: 13px; color: #71767b;">${escapeHtml(post.cat)} › ${escapeHtml(post.sub)}</span>
+                </div>
+            </div>
+        </div>
+        <p>${escapeHtml(post.desc)}</p>
+        <img src="${post.img}" loading="lazy" onclick="abrirImagemFullscreen('${post.img}')">
+        
+        <div class="post-actions-bar">
+            <button class="action-btn" onclick="document.getElementById('input-${post.id}').focus()">
+                <span class="material-symbols-rounded">chat_bubble_outline</span>
+                <span style="margin-left: 4px;">${post.comments ? post.comments.length : 0}</span>
+            </button>
+            <button class="action-btn ${likeClass}" onclick="toggleLike('${post.id}')">
+                <span class="material-symbols-rounded">${likeIcon}</span>
+                <span style="margin-left: 4px;">${post.likes.length || ''}</span>
+            </button>
+            <button class="action-btn" onclick="compartilharPost('${post.id}')">
+                <span class="material-symbols-rounded">ios_share</span>
+            </button>
+            ${actionBtn}
+        </div>
+        
+        <div class="post-comments">
+            <div class="comments-list" id="list-${post.id}"></div>
+            ${usuario.email ? `
+                <div class="comment-input">
+                    <img src="${usuario.foto || avatarFallback(usuario.nome)}" style="width:24px; height:24px; border-radius:50%;">
+                    <input type="text" placeholder="${t.commentPlace || 'Comentar...'}" id="input-${post.id}" maxlength="300">
+                    <button class="btn-icon" style="color:var(--green); font-size:18px;" onclick="addComentario('${post.id}')"><span class="material-symbols-rounded">send</span></button>
+                </div>
+            ` : ''}
+        </div>
+    `;    `;        <div class="post-header">
             <div class="post-user">
                 <img src="${userPic}" class="post-avatar ${border}" 
                      onerror="this.src='${avatarFallback(post.nome)}'"

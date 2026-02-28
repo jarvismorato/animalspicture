@@ -9,6 +9,7 @@
 
     <!-- SEO Primary -->
     <title>Animals Picture - Rede Social para Amantes de Animais | V23</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
     <meta name="description"
         content="A melhor rede social para amantes de animais! Compartilhe fotos de cães, gatos, pássaros e mais. Descubra raças, conecte-se com outros tutores e faça parte de nossa comunidade.">
     <meta name="keywords"
@@ -68,7 +69,6 @@
     <!-- External CSS -->
     <link rel="stylesheet" href="styles.css">
 </head>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
 <body>
     <!-- Skip to main content para acessibilidade -->
     <a href="#main-content" class="sr-only">Pular para o conteúdo principal</a>
@@ -165,7 +165,24 @@
         <button id="loadMoreBtn" class="btn-load-more" style="display:none;" data-i18n="loadMore">
             Carregar Mais
         </button>
-
+<nav class="bottom-nav">
+            <button class="nav-item active" onclick="window.scrollTo(0,0); document.getElementById('postBox').style.display='none';">
+                <span class="material-symbols-rounded">home</span>
+            </button>
+            <button class="nav-item" onclick="document.getElementById('searchInput').focus()">
+                <span class="material-symbols-rounded">search</span>
+            </button>
+            <button class="nav-item" onclick="document.getElementById('postBox').style.display='block'; window.scrollTo(0,0)">
+                <span class="material-symbols-rounded" style="border: 1px solid var(--text); border-radius: 8px; padding: 2px;">add</span>
+            </button>
+            <button class="nav-item" onclick="abrirModal('modalPremium')">
+                <span class="material-symbols-rounded">workspace_premium</span>
+            </button>
+            <button class="nav-item" onclick="abrirModal('modalPerfil')">
+                <span class="material-symbols-rounded" id="navUserIcon">person</span>
+                <img id="navUserImg" src="" style="display:none;" class="nav-avatar">
+            </button>
+        </nav>
         <footer class="footer-legal" role="contentinfo">
             <p>&copy; 2024-2026 Animals Picture. <span data-i18n="rights">Todos os direitos reservados.</span></p>
         </footer>

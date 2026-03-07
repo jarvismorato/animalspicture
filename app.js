@@ -423,7 +423,8 @@ function criarPostHTML(post, hidden = false) {
                 </div>
             ` : ''}
         </div>
-    `;    `;        <div class="post-header">
+    `;    `;       
+	 <div class="post-header">
             <div class="post-user">
                 <img src="${userPic}" class="post-avatar ${border}" 
                      onerror="this.src='${avatarFallback(post.nome)}'"

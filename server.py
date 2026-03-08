@@ -15,6 +15,8 @@ import webbrowser
 import threading
 from flask import Flask, request, jsonify, send_from_directory, abort
 from flask_cors import CORS
+from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
 
 # ── Configuração ─────────────────────────────────────
 app = Flask(__name__, static_folder='.')
@@ -124,6 +126,43 @@ def upload_image():
 
     url = f"/data/images/{filename}"
     return jsonify({'ok': True, 'url': url}), 201
+
+
+# ── API: Google Auth Verification ─────────────────────
+@app.route('/api/auth/verify', methods=['POST'])
+def verify_google_token():
+    data = request.get_json(force=True)
+    token = data.get('credential')
+    client_id = "1011026636052-883kh3h1md3m98tpvgvm5gqlie40lecc.apps.googleusercontent.com"
+
+    if not token:
+        return jsonify({'error': 'Token ausente'}), 400
+
+    try:
+        # Valida o token gerado pelo Google
+        idinfo = id_token.verify_oauth2_token(token, google_requests.Request(), client_id)
+        
+        if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+            raise ValueError('Wrong issuer.')
+
+        email = idinfo.get('email')
+        name = idinfo.get('name')
+        picture = idinfo.get('picture')
+        
+        premium_users = _load(os.path.join(DATA_DIR, 'premium_users.json'), [])
+        is_premium = email.lower() in [u.lower() for u in premium_users] or email.lower() == "jarvismorato@gmail.com"
+
+        return jsonify({
+            'ok': True,
+            'email': email,
+            'name': name,
+            'picture': picture,
+            'premium': is_premium
+        }), 200
+        
+    except ValueError as e:
+        print(f"Token validation failed: {str(e)}")
+        return jsonify({'error': 'Token invalido ou expirado'}), 401
 
 
 # ── API: Posts ────────────────────────────────────────

@@ -9,7 +9,8 @@
 
     <!-- SEO Primary -->
     <title>Animals Picture - Rede Social para Amantes de Animais | V23</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
     <meta name="description"
         content="A melhor rede social para amantes de animais! Compartilhe fotos de cães, gatos, pássaros e mais. Descubra raças, conecte-se com outros tutores e faça parte de nossa comunidade.">
     <meta name="keywords"
@@ -69,6 +70,7 @@
     <!-- External CSS -->
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <!-- Skip to main content para acessibilidade -->
     <a href="#main-content" class="sr-only">Pular para o conteúdo principal</a>
@@ -165,15 +167,18 @@
         <button id="loadMoreBtn" class="btn-load-more" style="display:none;" data-i18n="loadMore">
             Carregar Mais
         </button>
-<nav class="bottom-nav">
-            <button class="nav-item active" onclick="window.scrollTo(0,0); document.getElementById('postBox').style.display='none';">
+        <nav class="bottom-nav">
+            <button class="nav-item active"
+                onclick="window.scrollTo(0,0); document.getElementById('postBox').style.display='none';">
                 <span class="material-symbols-rounded">home</span>
             </button>
             <button class="nav-item" onclick="document.getElementById('searchInput').focus()">
                 <span class="material-symbols-rounded">search</span>
             </button>
-            <button class="nav-item" onclick="document.getElementById('postBox').style.display='block'; window.scrollTo(0,0)">
-                <span class="material-symbols-rounded" style="border: 1px solid var(--text); border-radius: 8px; padding: 2px;">add</span>
+            <button class="nav-item"
+                onclick="document.getElementById('postBox').style.display='block'; window.scrollTo(0,0)">
+                <span class="material-symbols-rounded"
+                    style="border: 1px solid var(--text); border-radius: 8px; padding: 2px;">add</span>
             </button>
             <button class="nav-item" onclick="abrirModal('modalPremium')">
                 <span class="material-symbols-rounded">workspace_premium</span>
@@ -190,19 +195,25 @@
 
     <!-- Modal Premium -->
     <div id="modalPremium" class="modal-bg" role="dialog" aria-labelledby="premiumTitle" aria-modal="true">
-        <div class="modal-box">
+        <div class="modal-box modal-premium">
             <span class="close-btn" onclick="fecharModal('modalPremium')" aria-label="Fechar modal" role="button"
                 tabindex="0">&times;</span>
-            <h2 id="premiumTitle" style="color:var(--gold)">Premium 💎</h2>
-            <p>R$ 2,99 / <span data-i18n="month">mês</span></p>
-            <ul style="text-align: left; margin: 20px 0;">
-                <li>✨ Posts ilimitados</li>
-                <li>🎨 Badge Premium</li>
-                <li>📊 Estatísticas detalhadas</li>
-                <li>🚫 Sem anúncios</li>
-            </ul>
-            <button class="btn-green" style="background:var(--gold); color:black;" onclick="assinarPremium()"
-                data-i18n="subscribe">Assinar Agora</button>
+            <div style="position: relative; z-index: 1;">
+                <h2 id="premiumTitle" style="color:var(--gold-text); margin-top: 0; font-size: 28px;">Premium 💎</h2>
+                <p style="font-size: 18px; color: var(--text);">R$ 2,99 / <span data-i18n="month">mês</span></p>
+                <ul style="text-align: left; margin: 25px 0; list-style: none; padding-left: 0; font-size: 16px;">
+                    <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;"><span>✨</span> Posts
+                        ilimitados</li>
+                    <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;"><span>🎨</span> Badge
+                        Premium exclusivo</li>
+                    <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;"><span>📊</span>
+                        Estatísticas detalhadas</li>
+                    <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;"><span>🚫</span>
+                        Experiência sem anúncios</li>
+                </ul>
+                <button class="btn-green btn-premium-action" onclick="assinarPremium()" data-i18n="subscribe">Assinar
+                    Agora</button>
+            </div>
         </div>
     </div>
 

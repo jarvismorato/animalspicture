@@ -68,21 +68,37 @@ window.onload = function () {
 };
 
 // === AUTENTICAÇÃO ===
-function handleLogin(res) {
-    const d = decodeJwt(res.credential);
-    usuario = {
-        nome: d.name,
-        foto: d.picture,
-        email: d.email,
-        premium: localStorage.getItem('app_premium') === 'true'
-    };
+async function handleLogin(res) {
+    try {
+        const response = await fetch(`${API}/auth/verify`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ credential: res.credential })
+        });
 
-    localStorage.setItem('app_email', d.email);
-    localStorage.setItem('app_nome', d.name);
-    localStorage.setItem('app_foto', d.picture);
+        const data = await response.json();
 
-    atualizarUI();
-    mostrarToast(TRANSLATIONS[idiomaAtual].postCreated, 'success');
+        if (data.ok) {
+            usuario = {
+                nome: data.name,
+                foto: data.picture,
+                email: data.email,
+                premium: data.premium
+            };
+
+            localStorage.setItem('app_email', data.email);
+            localStorage.setItem('app_nome', data.name);
+            localStorage.setItem('app_foto', data.picture);
+            localStorage.setItem('app_premium', data.premium);
+
+            atualizarUI();
+            mostrarToast("Login efetuado com sucesso!", 'success');
+        } else {
+            mostrarToast('Erro ao validar login: ' + data.error, 'error');
+        }
+    } catch (e) {
+        mostrarToast('Erro de conexão ao verificar o login.', 'error');
+    }
 }
 
 function carregarDados() {
@@ -377,7 +393,7 @@ function criarPostHTML(post, hidden = false) {
     const isOwner = (usuario.email && post.email === usuario.email) || isAdmin();
     const t = TRANSLATIONS[idiomaAtual];
 
-   let actionBtn = isOwner
+    let actionBtn = isOwner
         ? `<button class="action-btn btn-delete" onclick="deletarPost('${post.id}')" title="${t.delete}"><span class="material-symbols-rounded">delete</span></button>`
         : `<button class="action-btn btn-report" onclick="denunciarPost('${post.id}')" title="${t.report}"><span class="material-symbols-rounded">flag</span></button>`;
 
@@ -388,26 +404,30 @@ function criarPostHTML(post, hidden = false) {
     div.innerHTML = `
         <div class="post-header">
             <div class="post-user">
-                <img src="${userPic}" class="post-avatar ${border}" onerror="this.src='${avatarFallback(post.nome)}'">
-                <div style="display: flex; flex-direction: column;">
-                    <span style="font-weight: bold; font-size: 15px; display: flex; align-items: center;">${escapeHtml(post.nome)}${badge}</span>
-                    <span style="font-size: 13px; color: #71767b;">${escapeHtml(post.cat)} › ${escapeHtml(post.sub)}</span>
+                <img src="${userPic}" class="post-avatar ${border}" 
+                     onerror="this.src='${avatarFallback(post.nome)}'"
+                     alt="${escapeHtml(post.nome)}">
+                <div>
+                    <b>${escapeHtml(post.nome)}${badge}</b><br>
+                    <span style="font-size:11px; opacity:0.7;">
+                        ${escapeHtml(post.cat)} › ${escapeHtml(post.sub)}
+                    </span>
                 </div>
             </div>
         </div>
         <p>${escapeHtml(post.desc)}</p>
-        <img src="${post.img}" loading="lazy" onclick="abrirImagemFullscreen('${post.img}')">
+        <img src="${post.img}" loading="lazy" alt="${escapeHtml(post.desc)}" onclick="abrirImagemFullscreen('${post.img}')">
         
         <div class="post-actions-bar">
             <button class="action-btn" onclick="document.getElementById('input-${post.id}').focus()">
                 <span class="material-symbols-rounded">chat_bubble_outline</span>
                 <span style="margin-left: 4px;">${post.comments ? post.comments.length : 0}</span>
             </button>
-            <button class="action-btn ${likeClass}" onclick="toggleLike('${post.id}')">
+            <button class="action-btn ${likeClass}" onclick="toggleLike('${post.id}')" aria-label="Curtir">
                 <span class="material-symbols-rounded">${likeIcon}</span>
                 <span style="margin-left: 4px;">${post.likes.length || ''}</span>
             </button>
-            <button class="action-btn" onclick="compartilharPost('${post.id}')">
+            <button class="action-btn" onclick="compartilharPost('${post.id}')" aria-label="Compartilhar">
                 <span class="material-symbols-rounded">ios_share</span>
             </button>
             ${actionBtn}
@@ -418,45 +438,9 @@ function criarPostHTML(post, hidden = false) {
             ${usuario.email ? `
                 <div class="comment-input">
                     <img src="${usuario.foto || avatarFallback(usuario.nome)}" style="width:24px; height:24px; border-radius:50%;">
-                    <input type="text" placeholder="${t.commentPlace || 'Comentar...'}" id="input-${post.id}" maxlength="300">
-                    <button class="btn-icon" style="color:var(--green); font-size:18px;" onclick="addComentario('${post.id}')"><span class="material-symbols-rounded">send</span></button>
-                </div>
-            ` : ''}
-        </div>
-    `;    `;       
-	 <div class="post-header">
-            <div class="post-user">
-                <img src="${userPic}" class="post-avatar ${border}" 
-                     onerror="this.src='${avatarFallback(post.nome)}'"
-                     alt="${escapeHtml(post.nome)}">
-                <div><b>${escapeHtml(post.nome)}${badge}</b></div>
-            </div>
-        </div>
-        <p>${escapeHtml(post.desc)}</p>
-        <span style="font-size:11px; opacity:0.7; border:1px solid var(--border); padding:2px 6px; border-radius:4px;">
-            ${escapeHtml(post.cat)} › ${escapeHtml(post.sub)}
-        </span>
-        <img src="${post.img}" loading="lazy" alt="${escapeHtml(post.desc)}" onclick="abrirImagemFullscreen('${post.img}')">
-        
-        <div class="post-actions-bar">
-            <button class="action-btn ${likeClass}" onclick="toggleLike('${post.id}')" aria-label="Curtir">
-                ${likeIcon} ${post.likes.length}
-            </button>
-            <button class="action-btn" onclick="compartilharPost('${post.id}')" aria-label="Compartilhar">
-                🔗 ${t.share || 'Compartilhar'}
-            </button>
-            ${actionBtn}
-        </div>
-        
-        <div class="post-comments">
-            <div class="comments-list" id="list-${post.id}"></div>
-            ${usuario.email ? `
-                <div class="comment-input">
                     <input type="text" placeholder="${t.commentPlace || 'Comentar...'}" 
-                           id="input-${post.id}" aria-label="Escrever comentário"
-                           maxlength="300">
-                    <button class="btn-green" onclick="addComentario('${post.id}')" aria-label="Enviar" 
-                            style="width: auto; margin-top: 0;">›</button>
+                           id="input-${post.id}" aria-label="Escrever comentário" maxlength="300">
+                    <button class="btn-icon" style="color:var(--green); font-size:18px;" onclick="addComentario('${post.id}')" aria-label="Enviar"><span class="material-symbols-rounded">send</span></button>
                 </div>
             ` : ''}
         </div>

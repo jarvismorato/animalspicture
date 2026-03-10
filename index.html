@@ -75,145 +75,228 @@
     <!-- Skip to main content para acessibilidade -->
     <a href="#main-content" class="sr-only">Pular para o conteúdo principal</a>
 
-    <header role="banner">
-        <div class="logo" aria-label="Animals Picture">
-            <img src="logo.png" alt="Animals Picture Logo" class="logo-img">
-            <span class="logo-text">Animals <span>Picture</span></span>
-        </div>
-
-        <div class="search-container">
-            <input type="search" id="searchInput" class="search-input" placeholder="Buscar posts..."
-                aria-label="Buscar posts" data-i18n="search">
-            <span class="search-icon" aria-hidden="true">🔍</span>
-        </div>
-
-        <div class="header-actions">
-            <button class="btn-icon btn-premium" onclick="abrirModal('modalPremium')" aria-label="Assinar Premium"
-                title="Premium">💎</button>
-
-            <button class="btn-icon" onclick="abrirModal('modalConfig')" aria-label="Abrir Configurações"
-                title="Configurações">⚙️</button>
-
-            <div id="googleBtn" role="button" aria-label="Fazer login com Google"></div>
-
-            <div class="user-mini" id="loggedArea" onclick="abrirModal('modalPerfil')" style="display:none;"
-                role="button" aria-label="Abrir Perfil" tabindex="0">
-                <img id="headerImg" src="" alt="Foto de perfil">
+    <div class="app-layout">
+        <!-- Coluna Esquerda: Navegação Desktop -->
+        <aside class="left-sidebar">
+            <div class="logo desktop-logo" aria-label="Animals Picture">
+                <img src="logo.png" alt="Animals Picture Logo" class="logo-img">
+                <span class="logo-text">Animals <span>Picture</span></span>
             </div>
-        </div>
-    </header>
+            <nav class="desktop-nav">
+                <button class="nav-item-desk active"
+                    onclick="window.scrollTo(0,0); document.getElementById('postBox').style.display='none';">
+                    <span class="material-symbols-rounded">home</span>
+                    <span class="nav-label">Início</span>
+                </button>
+                <button class="nav-item-desk" onclick="document.getElementById('desktopSearchInput').focus()">
+                    <span class="material-symbols-rounded">search</span>
+                    <span class="nav-label">Buscar</span>
+                </button>
+                <button class="nav-item-desk" onclick="abrirModal('modalPremium')">
+                    <span class="material-symbols-rounded">workspace_premium</span>
+                    <span class="nav-label">Premium</span>
+                </button>
+                <button class="nav-item-desk" onclick="abrirModal('modalPerfil')">
+                    <span class="material-symbols-rounded" id="navUserIconDesk">person</span>
+                    <img id="navUserImgDesk" src="" style="display:none;" class="nav-avatar">
+                    <span class="nav-label">Perfil</span>
+                </button>
+                <button class="nav-item-desk" onclick="abrirModal('modalConfig')">
+                    <span class="material-symbols-rounded">settings</span>
+                    <span class="nav-label">Configurações</span>
+                </button>
+                <button class="btn-green btn-post-desk"
+                    onclick="document.getElementById('postBox').style.display='block'; window.scrollTo(0,0)">
+                    Publicar
+                </button>
+            </nav>
+        </aside>
 
-    <nav id="topicBar" class="topic-bar" role="navigation" aria-label="Filtros de categoria">
-        <button class="topic-btn active" onclick="filtrarFeed('Tudo', this)" data-i18n="all"
-            aria-pressed="true">Tudo</button>
-    </nav>
-
-    <!-- Barra de Ordenação -->
-    <div class="sort-bar">
-        <label for="sortSelect" class="sort-label" data-i18n="sortBy">Ordenar por:</label>
-        <select id="sortSelect" class="sort-select" aria-label="Ordenar feed">
-            <option value="newest" data-i18n="sortNewest">Mais Recentes</option>
-            <option value="likes" data-i18n="sortLikes">Mais Curtidos</option>
-        </select>
-    </div>
-
-    <main id="main-content" role="main">
-        <div class="static-content">
-            <h2 data-i18n="welcomeTitle">Bem-vindo à Animals Picture</h2>
-            <p data-i18n="welcomeDesc">Animals Picture é a comunidade líder para amantes de animais. Compartilhe fotos,
-                descubra raças e faça amigos.</p>
-        </div>
-
-        <div id="postBox" class="card" style="display:none;" aria-live="polite">
-            <h3 data-i18n="newPost">Nova Publicação</h3>
-            <form onsubmit="publicar(event)" aria-label="Formulário de nova publicação">
-                <label for="descPost" class="sr-only">Descrição do post</label>
-                <textarea id="descPost" rows="2" required placeholder="Escreva algo..." aria-label="Descrição do post"
-                    data-i18n="descPlace"></textarea>
-
-                <div style="display:flex; gap:10px; margin:10px 0;">
-                    <label for="catSelect" class="sr-only">Categoria</label>
-                    <select id="catSelect" required onchange="carregarSub()" aria-label="Selecionar categoria">
-                        <option value="">Categoria...</option>
-                    </select>
-
-                    <label for="subSelect" class="sr-only">Raça</label>
-                    <select id="subSelect" disabled required aria-label="Selecionar raça">
-                        <option value="">Raça...</option>
-                    </select>
+        <!-- Coluna Central -->
+        <div class="main-column">
+            <header role="banner" class="mobile-header">
+                <div class="logo" aria-label="Animals Picture">
+                    <img src="logo.png" alt="Animals Picture Logo" class="logo-img">
+                    <span class="logo-text">Animals <span>Picture</span></span>
                 </div>
 
-                <label class="file-upload-label" for="fileInput">
-                    <input type="file" id="fileInput" accept="image/*" capture="environment" style="display:none;"
-                        onchange="lerArquivo(this)" aria-label="Selecionar imagem">
-                    <span style="font-size:20px;" aria-hidden="true">📸</span>
-                    <span data-i18n="cameraBtn">Câmera / Galeria</span>
-                </label>
+                <div class="search-container">
+                    <input type="search" id="searchInput" class="search-input" placeholder="Buscar..."
+                        aria-label="Buscar posts" data-i18n="search">
+                    <span class="search-icon" aria-hidden="true">🔍</span>
+                </div>
 
-                <img id="previewUpload" src="" alt="Pré-visualização da imagem">
-                <input type="hidden" id="finalImageBase64">
+                <div class="header-actions">
+                    <button class="btn-icon btn-premium" onclick="abrirModal('modalPremium')"
+                        aria-label="Assinar Premium" title="Premium">💎</button>
+                    <button class="btn-icon" onclick="abrirModal('modalConfig')" aria-label="Abrir Configurações"
+                        title="Configurações">⚙️</button>
+                    <div id="googleBtn" role="button" aria-label="Fazer login com Google"></div>
+                    <div class="user-mini" id="loggedArea" onclick="abrirModal('modalPerfil')" style="display:none;"
+                        role="button" aria-label="Abrir Perfil" tabindex="0">
+                        <img id="headerImg" src="" alt="Foto de perfil">
+                    </div>
+                </div>
+            </header>
 
-                <button class="btn-green" type="submit" data-i18n="publishBtn"
-                    aria-label="Publicar post">Publicar</button>
+            <nav id="topicBar" class="topic-bar" role="navigation" aria-label="Filtros de categoria">
+                <button class="topic-btn active" onclick="filtrarFeed('Tudo', this)" data-i18n="all"
+                    aria-pressed="true">Tudo</button>
+            </nav>
 
-                <div id="limitDisplay" style="font-size:12px; color:#888; margin-top:5px; text-align:center;"
-                    aria-live="polite"></div>
-            </form>
+            <!-- Stories de Pets -->
+            <div class="stories-container" id="storiesContainer">
+                <div class="story-item create-story"
+                    onclick="document.getElementById('postBox').style.display='block'; window.scrollTo(0,0)">
+                    <div class="story-avatar-wrap">
+                        <span class="material-symbols-rounded">add</span>
+                    </div>
+                    <span>Novo</span>
+                </div>
+                <!-- Demonstração de Story -->
+                <div class="story-item">
+                    <div class="story-avatar-wrap"><img src="logo.png" alt="Story"></div>
+                    <span>Destaque</span>
+                </div>
+            </div>
+
+            <!-- Barra de Ordenação -->
+            <div class="sort-bar">
+                <label for="sortSelect" class="sort-label" data-i18n="sortBy">Ordenar por:</label>
+                <select id="sortSelect" class="sort-select" aria-label="Ordenar feed">
+                    <option value="newest" data-i18n="sortNewest">Mais Recentes</option>
+                    <option value="likes" data-i18n="sortLikes">Mais Curtidos</option>
+                </select>
+            </div>
+
+            <main id="main-content" role="main">
+                <div class="static-content">
+                    <h2 data-i18n="welcomeTitle">Bem-vindo à Animals Picture</h2>
+                    <p data-i18n="welcomeDesc">A comunidade líder para amantes de animais. Compartilhe fotos, descubra
+                        raças e faça amigos.</p>
+                </div>
+
+                <div id="postBox" class="card" style="display:none;" aria-live="polite">
+                    <h3 data-i18n="newPost">Nova Publicação</h3>
+                    <form onsubmit="publicar(event)" aria-label="Formulário de nova publicação">
+                        <label for="descPost" class="sr-only">Descrição do post</label>
+                        <textarea id="descPost" rows="2" required placeholder="Escreva algo..."
+                            aria-label="Descrição do post" data-i18n="descPlace"></textarea>
+
+                        <div style="display:flex; gap:10px; margin:10px 0;">
+                            <label for="catSelect" class="sr-only">Categoria</label>
+                            <select id="catSelect" required onchange="carregarSub()" aria-label="Selecionar categoria">
+                                <option value="">Categoria...</option>
+                            </select>
+                            <label for="subSelect" class="sr-only">Raça</label>
+                            <select id="subSelect" disabled required aria-label="Selecionar raça">
+                                <option value="">Raça...</option>
+                            </select>
+                        </div>
+
+                        <label class="file-upload-label" for="fileInput">
+                            <input type="file" id="fileInput" accept="image/*" capture="environment"
+                                style="display:none;" onchange="lerArquivo(this)" aria-label="Selecionar imagem">
+                            <span style="font-size:20px;" aria-hidden="true">📸</span>
+                            <span data-i18n="cameraBtn">Câmera / Galeria</span>
+                        </label>
+
+                        <img id="previewUpload" src="" alt="Pré-visualização da imagem">
+                        <input type="hidden" id="finalImageBase64">
+
+                        <button class="btn-green" type="submit" data-i18n="publishBtn"
+                            aria-label="Publicar post">Publicar</button>
+                        <div id="limitDisplay" style="font-size:12px; color:#888; margin-top:5px; text-align:center;"
+                            aria-live="polite"></div>
+                    </form>
+                </div>
+
+                <div id="feed" role="feed" aria-label="Feed de publicações"></div>
+
+                <button id="loadMoreBtn" class="btn-load-more" style="display:none;" data-i18n="loadMore">Carregar
+                    Mais</button>
+            </main>
         </div>
 
-        <div id="feed" role="feed" aria-label="Feed de publicações"></div>
+        <!-- Coluna Direita -->
+        <aside class="right-sidebar">
+            <div class="search-container desktop-search" style="margin: 0 0 20px 0; max-width: 100%;">
+                <input type="search" id="desktopSearchInput" class="search-input" placeholder="Buscar no Animals..."
+                    aria-label="Buscar posts">
+                <span class="search-icon" aria-hidden="true">🔍</span>
+            </div>
 
-        <!-- Botão Carregar Mais -->
-        <button id="loadMoreBtn" class="btn-load-more" style="display:none;" data-i18n="loadMore">
-            Carregar Mais
+            <div class="premium-card">
+                <h3>Assine o Premium 💎</h3>
+                <p>Libere posts ilimitados, remova anúncios e ganhe uma badge exclusiva.</p>
+                <button class="btn-green" onclick="abrirModal('modalPremium')"
+                    style="padding: 10px; font-size: 14px; background: linear-gradient(135deg, var(--gold), #ffb800); color: black;">Assinar
+                    Agora</button>
+            </div>
+
+            <div class="trending-card">
+                <h3>O que está em alta</h3>
+                <div class="trend-item">
+                    <p class="trend-category">Gatos • Assunto do Momento</p>
+                    <p class="trend-title">#GatosLaranjas</p>
+                    <p class="trend-stats">1.2K Posts</p>
+                </div>
+                <div class="trend-item">
+                    <p class="trend-category">Cães • Raças</p>
+                    <p class="trend-title">Golden Retriever</p>
+                    <p class="trend-stats">850 Posts</p>
+                </div>
+            </div>
+
+            <footer class="desktop-footer" role="contentinfo">
+                <p>&copy; 2024-2026 Animals Picture. Todos os direitos reservados.</p>
+                <div class="theme-toggle"
+                    onclick="mudarTema(document.body.classList.contains('light-theme') ? 'dark' : 'light')"
+                    style="cursor:pointer; display:flex; align-items:center; gap: 5px; margin-top:10px; color: var(--green); font-weight: bold; font-size: 14px;">
+                    <span class="material-symbols-rounded theme-icon">light_mode</span> Alternar Tema
+                </div>
+            </footer>
+        </aside>
+    </div>
+
+    <!-- Navegação Mobile Bottom -->
+    <nav class="bottom-nav">
+        <button class="nav-item active"
+            onclick="window.scrollTo(0,0); document.getElementById('postBox').style.display='none';">
+            <span class="material-symbols-rounded">home</span>
         </button>
-        <nav class="bottom-nav">
-            <button class="nav-item active"
-                onclick="window.scrollTo(0,0); document.getElementById('postBox').style.display='none';">
-                <span class="material-symbols-rounded">home</span>
-            </button>
-            <button class="nav-item" onclick="document.getElementById('searchInput').focus()">
-                <span class="material-symbols-rounded">search</span>
-            </button>
-            <button class="nav-item"
-                onclick="document.getElementById('postBox').style.display='block'; window.scrollTo(0,0)">
-                <span class="material-symbols-rounded"
-                    style="border: 1px solid var(--text); border-radius: 8px; padding: 2px;">add</span>
-            </button>
-            <button class="nav-item" onclick="abrirModal('modalPremium')">
-                <span class="material-symbols-rounded">workspace_premium</span>
-            </button>
-            <button class="nav-item" onclick="abrirModal('modalPerfil')">
-                <span class="material-symbols-rounded" id="navUserIcon">person</span>
-                <img id="navUserImg" src="" style="display:none;" class="nav-avatar">
-            </button>
-        </nav>
-        <footer class="footer-legal" role="contentinfo">
-            <p>&copy; 2024-2026 Animals Picture. <span data-i18n="rights">Todos os direitos reservados.</span></p>
-        </footer>
-    </main>
+        <button class="nav-item" onclick="document.getElementById('searchInput').focus()">
+            <span class="material-symbols-rounded">search</span>
+        </button>
+        <button class="nav-item"
+            onclick="document.getElementById('postBox').style.display='block'; window.scrollTo(0,0)">
+            <span class="material-symbols-rounded"
+                style="border: 1px solid var(--text); border-radius: 8px; padding: 2px;">add</span>
+        </button>
+        <button class="nav-item" onclick="abrirModal('modalPremium')">
+            <span class="material-symbols-rounded">workspace_premium</span>
+        </button>
+        <button class="nav-item" onclick="abrirModal('modalPerfil')">
+            <span class="material-symbols-rounded" id="navUserIcon">person</span>
+            <img id="navUserImg" src="" style="display:none;" class="nav-avatar">
+        </button>
+    </nav>
 
     <!-- Modal Premium -->
     <div id="modalPremium" class="modal-bg" role="dialog" aria-labelledby="premiumTitle" aria-modal="true">
-        <div class="modal-box modal-premium">
+        <div class="modal-box">
             <span class="close-btn" onclick="fecharModal('modalPremium')" aria-label="Fechar modal" role="button"
                 tabindex="0">&times;</span>
-            <div style="position: relative; z-index: 1;">
-                <h2 id="premiumTitle" style="color:var(--gold-text); margin-top: 0; font-size: 28px;">Premium 💎</h2>
-                <p style="font-size: 18px; color: var(--text);">R$ 2,99 / <span data-i18n="month">mês</span></p>
-                <ul style="text-align: left; margin: 25px 0; list-style: none; padding-left: 0; font-size: 16px;">
-                    <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;"><span>✨</span> Posts
-                        ilimitados</li>
-                    <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;"><span>🎨</span> Badge
-                        Premium exclusivo</li>
-                    <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;"><span>📊</span>
-                        Estatísticas detalhadas</li>
-                    <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;"><span>🚫</span>
-                        Experiência sem anúncios</li>
-                </ul>
-                <button class="btn-green btn-premium-action" onclick="assinarPremium()" data-i18n="subscribe">Assinar
-                    Agora</button>
-            </div>
+            <h2 id="premiumTitle" style="color:var(--gold)">Premium 💎</h2>
+            <p>R$ 2,99 / <span data-i18n="month">mês</span></p>
+            <ul style="text-align: left; margin: 20px 0;">
+                <li> Posts ilimitados</li>
+                <li> Badge Premium</li>
+                <li> Estatísticas detalhadas</li>
+                <li> Sem anúncios</li>
+            </ul>
+            <button class="btn-green" style="background:var(--gold); color:black;" onclick="assinarPremium()"
+                data-i18n="subscribe">Assinar Agora</button>
         </div>
     </div>
 
@@ -258,18 +341,18 @@
                 <h4 data-i18n="theme">Tema</h4>
                 <label for="selectTema" class="sr-only">Selecionar tema</label>
                 <select id="selectTema" onchange="mudarTema(this.value)" aria-label="Tema">
-                    <option value="dark">🌙 Escuro (Dark)</option>
-                    <option value="light">☀️ Claro (Light)</option>
+                    <option value="dark"> Escuro (Dark)</option>
+                    <option value="light"> Claro (Light)</option>
                 </select>
             </div>
 
             <div class="config-section">
-                <h4>💾 Backup</h4>
+                <h4> Backup</h4>
                 <button class="btn-green" style="background:#4CAF50; margin-bottom:10px;" onclick="exportarDados()">
-                    📥 Exportar Dados
+                    Exportar Dados
                 </button>
                 <button class="btn-green" style="background:#2196F3;" onclick="importarDados()">
-                    📤 Importar Dados
+                    Importar Dados
                 </button>
             </div>
 
@@ -282,7 +365,7 @@
 
             <div class="config-section">
                 <h4 data-i18n="localData">Dados Locais</h4>
-                <button class="btn-green" style="background:#444;" onclick="limparDados()" data-i18n="clearData">🗑️
+                <button class="btn-green" style="background:#444;" onclick="limparDados()" data-i18n="clearData">
                     Limpar Tudo</button>
             </div>
 

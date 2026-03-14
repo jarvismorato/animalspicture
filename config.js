@@ -32,8 +32,8 @@ const CONFIG = {
 const TRANSLATIONS = {
     pt: {
         all: "Tudo",
-        welcomeTitle: "Bem-vindo à Animals Picture",
-        welcomeDesc: "Animals Picture é a comunidade líder para amantes de animais. Compartilhe fotos, descubra raças e faça amigos.",
+        welcomeTitle: "Ajude a Reunir Famílias 🐾",
+        welcomeDesc: "Nossa missão é encontrar animais perdidos, promover adoções responsáveis e salvar vidas. Poste fotos, compartilhe e ajude!",
         newPost: "Nova Publicação",
         cameraBtn: "Câmera / Galeria",
         publishBtn: "Publicar",
@@ -69,10 +69,9 @@ const TRANSLATIONS = {
         importSuccess: "Dados importados com sucesso!",
         importError: "Erro ao importar dados. Verifique o arquivo.",
         // Categorias
-        "Cães": "Cães",
-        "Gatos": "Gatos",
-        "Pássaros": "Pássaros",
-        "Outros": "Outros",
+        "Perdidos": "Perdidos",
+        "Encontrados": "Encontrados",
+        "Adoção": "Adoção",
         // Novos
         sortBy: "Ordenar por:",
         sortNewest: "Mais Recentes",
@@ -84,8 +83,8 @@ const TRANSLATIONS = {
     },
     en: {
         all: "All",
-        welcomeTitle: "Welcome to Animals Picture",
-        welcomeDesc: "Animals Picture is the leading community for animal lovers. Share photos, discover breeds, and make friends.",
+        welcomeTitle: "Help Reunite Families 🐾",
+        welcomeDesc: "Our mission is to find lost pets, promote responsible adoptions, and save lives. Post photos, share, and help!",
         newPost: "New Post",
         cameraBtn: "Camera / Gallery",
         publishBtn: "Publish",
@@ -115,10 +114,9 @@ const TRANSLATIONS = {
         postDeleted: "Post deleted!",
         reported: "Post reported! Our team will review it.",
         // Categories
-        "Cães": "Dogs",
-        "Gatos": "Cats",
-        "Pássaros": "Birds",
-        "Outros": "Others",
+        "Perdidos": "Lost",
+        "Encontrados": "Found",
+        "Adoção": "Adoption",
         limitReached: "You've reached the free post limit! Subscribe to Premium for unlimited posts.",
         imageRequired: "Please select an image and category!",
         imageTooBig: "Image too large! Max 2MB.",
@@ -136,8 +134,8 @@ const TRANSLATIONS = {
     },
     es: {
         all: "Todo",
-        welcomeTitle: "Bienvenido a Animals Picture",
-        welcomeDesc: "Animals Picture es la comunidad líder para amantes de los animales. Comparte fotos, descubre razas y haz amigos.",
+        welcomeTitle: "Ayuda a Reunir Familias 🐾",
+        welcomeDesc: "Nuestra misión es encontrar mascotas perdidas, promover adopciones responsables y salvar vidas.",
         newPost: "Nueva Publicación",
         cameraBtn: "Cámara / Galería",
         publishBtn: "Publicar",
@@ -173,10 +171,9 @@ const TRANSLATIONS = {
         importSuccess: "¡Datos importados con éxito!",
         importError: "Error al importar datos. Verifica el archivo.",
         // Categorías
-        "Cães": "Perros",
-        "Gatos": "Gatos",
-        "Pássaros": "Pájaros",
-        "Outros": "Otros",
+        "Perdidos": "Perdidos",
+        "Encontrados": "Encontrados",
+        "Adoção": "Adopción",
         // Nuevos
         sortBy: "Ordenar por:",
         sortNewest: "Más Recientes",
@@ -190,22 +187,13 @@ const TRANSLATIONS = {
 
 // === CATEGORIAS E RAÇAS ===
 const CATEGORIAS = {
-    "Cães": [
-        "Vira-lata", "Labrador", "Poodle", "Bulldog", "Golden Retriever",
-        "Pastor Alemão", "Shih Tzu", "Yorkshire", "Pug", "Rottweiler",
-        "Husky Siberiano", "Pinscher", "Beagle", "Pitbull", "Boxer",
-        "Chihuahua", "Dálmata", "Border Collie"
+    "Perdidos": [
+        "Cachorro", "Gato", "Ave", "Outro"
     ],
-    "Gatos": [
-        "Vira-lata", "Siamês", "Persa", "Maine Coon", "Sphynx",
-        "Angorá", "Bengal", "Ragdoll", "British Shorthair", "Exótico"
+    "Encontrados": [
+        "Cachorro", "Gato", "Ave", "Outro"
     ],
-    "Pássaros": [
-        "Calopsita", "Canário", "Papagaio", "Periquito", "Arara",
-        "Cacatua", "Agapornis", "Mandarim"
-    ],
-    "Outros": [
-        "Hamster", "Coelho", "Tartaruga", "Peixe", "Cavalo",
-        "Porquinho-da-Índia", "Iguana", "Exótico"
+    "Adoção": [
+        "Cachorro", "Gato", "Ave", "Outro"
     ]
 };

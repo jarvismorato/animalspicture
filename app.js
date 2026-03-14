@@ -204,7 +204,7 @@ async function getDB(page = 1, sort = 'newest') {
         const data = await res.json();
         return data;
     } catch (e) {
-        mostrarToast('⚠️ Servidor temporariamente indisponível', 'error');
+        console.warn('Servidor indisponível');
         return { posts: [], total: 0, page: 1, hasMore: false };
     }
 }
@@ -218,7 +218,7 @@ async function savePostDB(post) {
         });
         return res.ok;
     } catch (e) {
-        mostrarToast('⚠️ Servidor temporariamente indisponível', 'error');
+        console.warn('Servidor indisponível');
         return false;
     }
 }

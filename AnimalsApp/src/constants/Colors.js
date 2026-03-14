@@ -2,23 +2,43 @@ export const Colors = {
     light: {
         bg: '#ffffff',
         card: '#ffffff',
-        text: '#0f1419', // Deep dark for text like X
-        textSecondary: '#536471', // Greyish text for X
-        border: '#eff3f4', // Very light grey border
+        cardBg: '#f7f8fa',
+        text: '#0f1419',
+        textSecondary: '#536471',
+        border: '#e8ecf0',
         inputBg: '#eff3f4',
-        green: '#1d9bf0', // Use X blue as the main action color, or keep a vibrant green like Instagram. Let's use a sleek blue/cyan
+        green: '#1d9bf0',
         blue: '#1d9bf0',
-        red: '#f91880' // modern pink/red
+        red: '#f91880',
+        gold: '#F59E0B',
+        goldDark: '#e85d04',
+        gradientStart: '#1d9bf0',
+        gradientEnd: '#6366f1',
+        shadow: 'rgba(0,0,0,0.08)',
+        tabBarBg: 'rgba(255,255,255,0.92)',
+        categoryLost: '#ef4444',
+        categoryFound: '#22c55e',
+        categoryAdopt: '#3b82f6',
     },
     dark: {
-        bg: '#000000', // True OLED black
+        bg: '#000000',
         card: '#000000',
+        cardBg: '#111111',
         text: '#e7e9ea',
         textSecondary: '#71767b',
         border: '#2f3336',
-        inputBg: '#202327',
-        green: '#1d9bf0', // vibrant cyan/blue
+        inputBg: '#1a1d21',
+        green: '#1d9bf0',
         blue: '#1d9bf0',
-        red: '#f91880'
+        red: '#f91880',
+        gold: '#F59E0B',
+        goldDark: '#e85d04',
+        gradientStart: '#1d9bf0',
+        gradientEnd: '#8b5cf6',
+        shadow: 'rgba(0,0,0,0.4)',
+        tabBarBg: 'rgba(0,0,0,0.92)',
+        categoryLost: '#ef4444',
+        categoryFound: '#22c55e',
+        categoryAdopt: '#3b82f6',
     }
 };

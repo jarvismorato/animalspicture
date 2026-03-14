@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, FlatList, TouchableOpacity, TextInput, Image, StyleSheet,
-  Alert, ScrollView, Modal, RefreshControl, ActivityIndicator, Dimensions
+  Alert, ScrollView, Modal, RefreshControl, ActivityIndicator, Dimensions, Linking
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
@@ -268,6 +268,16 @@ function MainApp() {
           keyExtractor={item => item?.id || Math.random().toString()}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.green} />}
           showsVerticalScrollIndicator={false}
+          ListHeaderComponent={
+            <View style={{ backgroundColor: 'rgba(29, 161, 242, 0.08)', borderWidth: 1, borderColor: colors.border, borderRadius: 16, padding: 20, marginHorizontal: 16, marginTop: 12, marginBottom: 8, alignItems: 'center' }}>
+              <Text style={{ fontSize: 36, marginBottom: 8 }}>🌟</Text>
+              <Text style={{ color: colors.text, fontSize: 18, fontWeight: '800', textAlign: 'center', marginBottom: 8 }}>{t.welcome}</Text>
+              <Text style={{ color: colors.textSecondary, fontSize: 14, textAlign: 'center', lineHeight: 20 }}>{t.welcomeDesc}</Text>
+              <TouchableOpacity style={{ backgroundColor: colors.blue, borderRadius: 20, paddingHorizontal: 20, paddingVertical: 10, marginTop: 12 }} onPress={() => setActiveTab('donate')}>
+                <Text style={{ color: '#fff', fontWeight: '700', fontSize: 14 }}>{t.donateBtn || 'Fazer uma Doação 💛'}</Text>
+              </TouchableOpacity>
+            </View>
+          }
           renderItem={({ item, index }) => (
             <>
               <PostCard post={item} colors={colors} t={t} userEmail={user.email} onLike={handleLike} onDelete={handleDelete} onComment={() => { }} />
@@ -401,6 +411,51 @@ function MainApp() {
     </ScrollView>
   );
 
+  const renderDonation = () => (
+    <ScrollView style={{ flex: 1, backgroundColor: colors.bg, padding: 20 }}>
+      <View style={{ alignItems: 'center', marginTop: 40, marginBottom: 30 }}>
+        <View style={{ backgroundColor: '#F59E0B', borderRadius: 40, width: 80, height: 80, alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+          <Ionicons name="heart" size={40} color="#fff" />
+        </View>
+        <Text style={{ color: colors.text, fontSize: 26, fontWeight: '800', textAlign: 'center' }}>{t.donateTitle}</Text>
+      </View>
+
+      <View style={[styles.settingsCard, { backgroundColor: colors.inputBg, borderColor: colors.border, padding: 24 }]}>
+        <Text style={{ color: colors.text, fontSize: 15, lineHeight: 22, textAlign: 'center' }}>{t.donateDesc}</Text>
+      </View>
+
+      <TouchableOpacity
+        style={[styles.greenBtn, { backgroundColor: '#e85d04', paddingVertical: 18, marginTop: 10 }]}
+        onPress={() => Linking.openURL('https://amparanimal.org.br/doar/')}
+      >
+        <Text style={{ color: '#fff', fontWeight: '800', fontSize: 18 }}>{t.donateBtn}</Text>
+      </TouchableOpacity>
+
+      <Text style={{ color: colors.textSecondary, fontSize: 12, textAlign: 'center', marginTop: 16, lineHeight: 18, paddingHorizontal: 10 }}>{t.donateDisclaimer}</Text>
+
+      {/* Redes Sociais */}
+      <View style={{ marginTop: 40, alignItems: 'center' }}>
+        <Text style={{ color: colors.textSecondary, fontSize: 14, fontWeight: '600', marginBottom: 16 }}>Siga-nos nas redes sociais 🐾</Text>
+        <View style={{ flexDirection: 'row', gap: 20, justifyContent: 'center' }}>
+          <TouchableOpacity style={{ backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 25, width: 50, height: 50, alignItems: 'center', justifyContent: 'center' }} onPress={() => Linking.openURL('https://www.youtube.com/channel/UCCDTiSlJKsn9PyOJGnn7aWQ')}>
+            <Ionicons name="logo-youtube" size={24} color="#FF0000" />
+          </TouchableOpacity>
+          <TouchableOpacity style={{ backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 25, width: 50, height: 50, alignItems: 'center', justifyContent: 'center' }} onPress={() => Linking.openURL('https://instagram.com/animalspicture')}>
+            <Ionicons name="logo-instagram" size={24} color="#E1306C" />
+          </TouchableOpacity>
+          <TouchableOpacity style={{ backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 25, width: 50, height: 50, alignItems: 'center', justifyContent: 'center' }} onPress={() => Linking.openURL('https://tiktok.com/@animalspicture')}>
+            <Ionicons name="logo-tiktok" size={24} color={colors.text} />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <TouchableOpacity style={{ marginTop: 24, padding: 10, alignItems: 'center' }} onPress={() => setActiveTab('feed')}>
+        <Text style={{ color: colors.textSecondary, fontSize: 16, fontWeight: '600' }}>Voltar ao Feed</Text>
+      </TouchableOpacity>
+      <View style={{ height: 60 }} />
+    </ScrollView>
+  );
+
   const renderSettings = () => (
     <ScrollView style={{ flex: 1, padding: 16, backgroundColor: colors.bg }}>
       <Text style={[styles.screenTitle, { color: colors.text }]}>{t.settings}</Text>
@@ -464,8 +519,14 @@ function MainApp() {
       {/* ── Top Header ── */}
       {activeTab !== 'newPost' && (
         <View style={[styles.header, { backgroundColor: colors.bg, borderBottomColor: colors.border }]}>
-          <Text style={[styles.logoText, { color: colors.text, fontFamily: 'sans-serif-medium' }]}>Animals Picture</Text>
-          <View style={{ flexDirection: 'row', gap: 16, alignItems: 'center' }}>
+          <View>
+            <Text style={[styles.logoText, { color: colors.text, fontFamily: 'sans-serif-medium' }]}>Animals Picture</Text>
+            <Text style={{ color: colors.textSecondary, fontSize: 10 }}>Encontre e Ajude 🐾</Text>
+          </View>
+          <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+            <TouchableOpacity onPress={() => setActiveTab('donate')} style={{ borderWidth: 1, borderColor: '#F59E0B', borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4 }}>
+              <Text style={{ color: '#F59E0B', fontWeight: '700', fontSize: 13 }}>Doar 💛</Text>
+            </TouchableOpacity>
             <TouchableOpacity onPress={() => { setSort(sort === 'newest' ? 'likes' : 'newest') }}>
               <Feather name="bar-chart-2" size={24} color={sort === 'likes' ? colors.blue : colors.text} />
             </TouchableOpacity>
@@ -484,6 +545,7 @@ function MainApp() {
         {activeTab === 'newPost' && renderNewPost()}
         {activeTab === 'settings' && renderSettings()}
         {activeTab === 'premium' && renderPremium()}
+        {activeTab === 'donate' && renderDonation()}
       </View>
 
       {/* ── Bottom Tab Bar (X / Instagram style) ── */}
@@ -492,16 +554,16 @@ function MainApp() {
           {activeTab === 'feed' ? <Ionicons name="home" size={28} color={colors.text} /> : <Ionicons name="home-outline" size={28} color={colors.textSecondary} />}
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.tabItem} onPress={() => setActiveTab('premium')}>
-          {activeTab === 'premium' ? <Ionicons name="star" size={28} color={'#F59E0B'} /> : <Ionicons name="star-outline" size={28} color={colors.textSecondary} />}
+        <TouchableOpacity style={styles.tabItem} onPress={() => setActiveTab('donate')}>
+          {activeTab === 'donate' ? <Ionicons name="heart" size={28} color={'#F59E0B'} /> : <Ionicons name="heart-outline" size={28} color={colors.textSecondary} />}
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.tabItem} onPress={() => setActiveTab('newPost')}>
           {activeTab === 'newPost' ? <Ionicons name="add-circle" size={32} color={colors.text} /> : <Ionicons name="add-circle-outline" size={32} color={colors.textSecondary} />}
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.tabItem} onPress={() => { }}>
-          <Ionicons name="notifications-outline" size={28} color={colors.textSecondary} />
+        <TouchableOpacity style={styles.tabItem} onPress={() => setActiveTab('premium')}>
+          {activeTab === 'premium' ? <Ionicons name="star" size={28} color={'#F59E0B'} /> : <Ionicons name="star-outline" size={28} color={colors.textSecondary} />}
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.tabItem} onPress={() => setActiveTab('settings')}>

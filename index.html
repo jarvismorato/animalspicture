@@ -78,8 +78,13 @@
         <!-- Coluna Esquerda: Navegação Desktop -->
         <aside class="left-sidebar">
             <div class="logo desktop-logo" aria-label="Animals Picture">
-                <h1>Animals Picture</h1>
-                <span class="logo-text" style="font-size: 11px; opacity: 0.7;">Ajude Animais Perdidos 🐾</span>
+                <div class="logo">
+                    <img src="logo.png" alt="Animals Picture Logo" style="width: 40px; height: 40px; border-radius: 8px;">
+                    <div style="display: flex; flex-direction: column; margin-left: 10px;">
+                        <h1 style="font-size: 20px; margin: 0; line-height: 1;">Animals Picture</h1>
+                        <span class="logo-text" style="font-size: 11px; opacity: 0.7;">Ajude Animais Perdidos</span>
+                    </div>
+                </div>
             </div>
             <nav class="desktop-nav">
                 <button class="nav-item-desk active"
@@ -97,7 +102,7 @@
                 </button>
                 <button class="nav-item-desk" onclick="abrirModal('modalDoacao')">
                     <span class="material-symbols-rounded">volunteer_activism</span>
-                    <span class="nav-label">Doar 💛</span>
+                    <span class="nav-label">Doar</span>
                 </button>
                 <button class="nav-item-desk" onclick="abrirModal('modalPerfil')">
                     <span class="material-symbols-rounded" id="navUserIconDesk">person</span>
@@ -118,15 +123,18 @@
         <!-- Coluna Central -->
         <div class="main-column">
             <header role="banner" class="mobile-header">
-                <div class="logo" aria-label="Animals Picture">
-                    <h1>Animals Picture</h1>
-                    <span class="logo-text" style="font-size: 11px; opacity: 0.7;">Encontre e Ajude 🐾</span>
+                <div class="logo" aria-label="Animals Picture" style="display: flex; align-items: center; gap: 10px;">
+                    <img src="logo.png" alt="Logo" style="width: 36px; height: 36px; border-radius: 8px;">
+                    <div style="display: flex; flex-direction: column;">
+                        <h1 style="font-size: 18px; margin: 0; line-height: 1;">Animals Picture</h1>
+                        <span class="logo-text" style="font-size: 11px; opacity: 0.7; margin-top: 2px;">Encontre e Ajude</span>
+                    </div>
                 </div>
 
                 <div class="search-container">
                     <input type="search" id="searchInput" class="search-input" placeholder="Buscar..."
                         aria-label="Buscar posts" data-i18n="search">
-                    <span class="search-icon" aria-hidden="true">🔍</span>
+                    <span class="search-icon" aria-hidden="true"></span>
                 </div>
 
                 <div class="header-actions">
@@ -135,9 +143,9 @@
                         Doar
                     </button>
                     <button class="btn-icon btn-premium" onclick="abrirModal('modalPremium')"
-                        aria-label="Assinar Premium" title="Premium">💎</button>
-                    <button class="btn-icon" onclick="abrirModal('modalConfig')" aria-label="Abrir Configurações"
-                        title="Configurações">⚙️</button>
+                        aria-label="Assinar Premium" title="Premium">Premium</button>
+                    <button class="btn-icon material-symbols-rounded" onclick="abrirModal('modalConfig')" aria-label="Abrir Configurações"
+                        title="Configurações">settings</button>
                     <button id="googleBtn" class="btn-green" style="padding: 6px 14px; font-size: 13px; margin: 0; width: auto;" onclick="loginManual()">Entrar</button>
                     <div class="user-mini" id="loggedArea" onclick="abrirModal('modalPerfil')" style="display:none;"
                         role="button" aria-label="Abrir Perfil" tabindex="0">
@@ -179,17 +187,17 @@
             <main id="main-content" role="main">
                 <div class="static-content"
                     style="background: linear-gradient(135deg, rgba(29, 161, 242, 0.1) 0%, rgba(29, 161, 242, 0) 100%); border: 1px solid var(--border); border-radius: 16px; padding: 25px 20px; text-align: center; margin-bottom: 20px;">
-                    <div style="font-size: 40px; margin-bottom: 10px;">🌟</div>
+                    <div style="font-size: 40px; margin-bottom: 10px; color: var(--gold);">✧</div>
                     <h2 data-i18n="welcomeTitle"
                         style="color: var(--text); font-size: 20px; margin-top: 0; margin-bottom: 15px;">Ajude a Reunir
-                        Famílias 🐾</h2>
+                        Famílias</h2>
                     <p data-i18n="welcomeDesc" style="color: #71767b; font-size: 15px; line-height: 1.5; margin: 0;">
                         Nossa missão é usar o poder da comunidade para encontrar animais perdidos, promover adoções
                         responsáveis e salvar vidas. Faça parte!</p>
                     <div style="margin-top: 15px;">
                         <button class="btn-green"
                             style="width: auto; padding: 8px 16px; font-size: 14px; margin-right: 10px;"
-                            onclick="abrirModal('modalDoacao')">Fazer uma Doação 💛</button>
+                            onclick="abrirModal('modalDoacao')">Fazer uma Doação</button>
                     </div>
                 </div>
 
@@ -214,7 +222,7 @@
                         <label class="file-upload-label" for="fileInput">
                             <input type="file" id="fileInput" accept="image/*" style="display:none;"
                                 onchange="lerArquivo(this)" aria-label="Selecionar imagem">
-                            <span style="font-size:20px;" aria-hidden="true">📸</span>
+                            <span class="material-symbols-rounded" style="font-size:20px;" aria-hidden="true">photo_camera</span>
                             <span data-i18n="cameraBtn">Câmera / Galeria</span>
                         </label>
 
@@ -244,7 +252,7 @@
             </div>
 
             <div class="premium-card">
-                <h3>Assine o Premium 💎</h3>
+                <h3>Assine o Premium</h3>
                 <p>Libere posts ilimitados, remova anúncios e ganhe uma badge exclusiva.</p>
                 <button class="btn-green" onclick="abrirModal('modalPremium')"
                     style="padding: 10px; font-size: 14px; background: linear-gradient(135deg, var(--gold), #ffb800); color: black;">Assinar
@@ -276,7 +284,7 @@
                 style="border-top: 1px solid var(--border); padding-top: 20px; align-items:center;">
                 <!-- Redes Sociais -->
                 <div class="social-links" style="margin-bottom: 20px;">
-                    <p style="font-size: 13px; color: #71767b; margin-bottom: 10px; text-align: center;">Siga-nos 🐾</p>
+                    <p style="font-size: 13px; color: #71767b; margin-bottom: 10px; text-align: center;">Siga-nos</p>
                     <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
                         <a href="https://www.youtube.com/channel/UCCDTiSlJKsn9PyOJGnn7aWQ" target="_blank"
                             class="social-icon" title="YouTube"

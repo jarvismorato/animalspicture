@@ -161,7 +161,7 @@ function atualizarLimite() {
     if (!limite) return;
 
     if (isAdmin() || usuario.premium) {
-        limite.innerText = "Ilimitado ✨";
+        limite.innerText = "Ilimitado";
         limite.style.color = "var(--gold)";
     } else {
         const restantes = CONFIG.LIMITE_POSTS_GRATIS - postsHoje;
@@ -249,7 +249,7 @@ async function deletePostDB(id) {
             headers: apiHeaders()
         });
     } catch (e) {
-        mostrarToast('⚠️ Servidor offline!', 'error');
+        mostrarToast('Servidor offline!', 'error');
     }
 }
 
@@ -266,7 +266,7 @@ async function uploadImage(base64Data) {
         }
         return null;
     } catch (e) {
-        mostrarToast('⚠️ Erro ao enviar imagem!', 'error');
+        mostrarToast('Erro ao enviar imagem!', 'error');
         return null;
     }
 }
@@ -317,7 +317,7 @@ async function renderizarFeed() {
         id: 'demo',
         nome: 'Animals Picture',
         foto: 'https://ui-avatars.com/api/?name=Admin&background=00C853&color=fff',
-        desc: 'Bem-vindo ao Animals Picture! 🐾 Compartilhe fotos dos seus animais favoritos.',
+        desc: 'Bem-vindo ao Animals Picture! Compartilhe fotos dos seus animais favoritos.',
         img: 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=600&q=80',
         cat: 'Sistema',
         sub: 'Boas-vindas',
@@ -608,7 +608,7 @@ async function toggleLike(id) {
         });
         await renderizarFeed();
     } catch (e) {
-        mostrarToast('⚠️ Servidor offline!', 'error');
+        mostrarToast('Servidor offline!', 'error');
     }
 }
 
@@ -871,7 +871,7 @@ async function assinarPremium() {
     const t = TRANSLATIONS[idiomaAtual];
 
     const confirmar = await mostrarConfirm(
-        'Tornar-se Premium 💎',
+        'Tornar-se Premium',
         'Você será redirecionado para a página segura de pagamento (R$ 14,90 pagamento único).\n\nApós pagar, envie um email com o comprovante para suporte!',
         { textoOk: 'Pagar agora', textoCancelar: 'Cancelar', tipoOk: 'premium' }
     );

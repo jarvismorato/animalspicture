@@ -38,6 +38,11 @@ body {
     justify-content: center;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+}
+
+html {
+    overflow-x: hidden;
 }
 
 /* === APP LAYOUT === */

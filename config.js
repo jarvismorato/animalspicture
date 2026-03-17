@@ -69,6 +69,7 @@ const TRANSLATIONS = {
         importSuccess: "Dados importados com sucesso!",
         importError: "Erro ao importar dados. Verifique o arquivo.",
         // Categorias
+        "Geral": "Geral",
         "Perdidos": "Perdidos",
         "Encontrados": "Encontrados",
         "Adoção": "Adoção",
@@ -114,6 +115,7 @@ const TRANSLATIONS = {
         postDeleted: "Post deleted!",
         reported: "Post reported! Our team will review it.",
         // Categories
+        "Geral": "General",
         "Perdidos": "Lost",
         "Encontrados": "Found",
         "Adoção": "Adoption",
@@ -171,6 +173,7 @@ const TRANSLATIONS = {
         importSuccess: "¡Datos importados con éxito!",
         importError: "Error al importar datos. Verifica el archivo.",
         // Categorías
+        "Geral": "General",
         "Perdidos": "Perdidos",
         "Encontrados": "Encontrados",
         "Adoção": "Adopción",
@@ -187,6 +190,9 @@ const TRANSLATIONS = {
 
 // === CATEGORIAS E RAÇAS ===
 const CATEGORIAS = {
+    "Geral": [
+        "Cachorro", "Gato", "Ave", "Outro"
+    ],
     "Perdidos": [
         "Cachorro", "Gato", "Ave", "Outro"
     ],

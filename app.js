@@ -377,7 +377,7 @@ function criarPostHTML(post, hidden = false) {
     const isOwner = (usuario.email && post.email === usuario.email) || isAdmin();
     const t = TRANSLATIONS[idiomaAtual];
 
-   let actionBtn = isOwner
+    let actionBtn = isOwner
         ? `<button class="action-btn btn-delete" onclick="deletarPost('${post.id}')" title="${t.delete}"><span class="material-symbols-rounded">delete</span></button>`
         : `<button class="action-btn btn-report" onclick="denunciarPost('${post.id}')" title="${t.report}"><span class="material-symbols-rounded">flag</span></button>`;
 
@@ -423,7 +423,7 @@ function criarPostHTML(post, hidden = false) {
                 </div>
             ` : ''}
         </div>
-    `;    `;       
+    `; `;       
 	 <div class="post-header">
             <div class="post-user">
                 <img src="${userPic}" class="post-avatar ${border}" 
@@ -481,11 +481,11 @@ async function publicar(e) {
 
     const desc = document.getElementById('descPost').value;
     const base64 = document.getElementById('finalImageBase64').value;
-    const cat = document.getElementById('catSelect').value;
-    const sub = document.getElementById('subSelect').value;
+    const cat = document.getElementById('catSelect').value || 'Geral';
+    const sub = document.getElementById('subSelect').value || '';
 
-    if (!base64 || !cat) {
-        mostrarToast(t.imageRequired, 'error');
+    if (!base64) {
+        mostrarToast(t.imageRequired || "Imagem necessária!", 'error');
         return;
     }
 
@@ -786,7 +786,7 @@ function compartilharPost(id) {
         }).catch(() => { });
     } else {
         navigator.clipboard.writeText(url).then(() => {
-            mostrarToast('Link copiado! 🔗', 'success');
+            mostrarToast('Link copiado', 'success');
         });
     }
 }
@@ -852,7 +852,7 @@ async function assinarPremium() {
     const t = TRANSLATIONS[idiomaAtual];
 
     const confirmar = await mostrarConfirm(
-        'Premium 💎',
+        'Premium',
         t.confirmPremium,
         { textoOk: 'Assinar', textoCancelar: 'Cancelar', tipoOk: 'premium' }
     );
@@ -915,7 +915,7 @@ async function limparDados() {
     const t = TRANSLATIONS[idiomaAtual];
 
     const confirmar = await mostrarConfirm(
-        '⚠️ Limpar Tudo',
+        'Limpar Tudo',
         t.confirmClear,
         { textoOk: 'Sim, limpar tudo', textoCancelar: 'Cancelar', tipoOk: 'danger' }
     );

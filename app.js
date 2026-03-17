@@ -85,6 +85,25 @@ function handleLogin(res) {
     mostrarToast(TRANSLATIONS[idiomaAtual].postCreated, 'success');
 }
 
+function loginManual() {
+    const nome = prompt("Digite seu nome (ou deixe em branco para Visitante):") || "Visitante";
+    const email = prompt("Digite seu email (fictício para testes):") || "convidado@animalspicture.com";
+    
+    usuario = {
+        nome: nome,
+        foto: `https://ui-avatars.com/api/?name=${encodeURIComponent(nome)}&background=1d9bf0&color=fff`,
+        email: email,
+        premium: localStorage.getItem('app_premium') === 'true'
+    };
+
+    localStorage.setItem('app_email', usuario.email);
+    localStorage.setItem('app_nome', usuario.nome);
+    localStorage.setItem('app_foto', usuario.foto);
+
+    atualizarUI();
+    mostrarToast("Login realizado com sucesso!", 'success');
+}
+
 function carregarDados() {
     usuario.nome = localStorage.getItem('app_nome') || "";
     usuario.foto = localStorage.getItem('app_foto') || "";
@@ -620,7 +639,7 @@ async function addComentario(id) {
         input.value = '';
         carregarComentarios(id);
     } catch (e) {
-        mostrarToast('⚠️ Servidor offline!', 'error');
+        mostrarToast('Erro ao publicar comentário', 'error');
     }
 }
 
@@ -852,17 +871,16 @@ async function assinarPremium() {
     const t = TRANSLATIONS[idiomaAtual];
 
     const confirmar = await mostrarConfirm(
-        'Premium',
-        t.confirmPremium,
-        { textoOk: 'Assinar', textoCancelar: 'Cancelar', tipoOk: 'premium' }
+        'Tornar-se Premium 💎',
+        'Você será redirecionado para a página segura de pagamento (R$ 14,90 pagamento único).\n\nApós pagar, envie um email com o comprovante para suporte!',
+        { textoOk: 'Pagar agora', textoCancelar: 'Cancelar', tipoOk: 'premium' }
     );
 
     if (confirmar) {
-        usuario.premium = true;
-        localStorage.setItem('app_premium', 'true');
-        atualizarUI();
-        fecharModal('modalPremium');
-        mostrarToast("Bem-vindo ao Premium! ✨", 'success');
+        mostrarToast("Abrindo checkout...", "info");
+        setTimeout(() => {
+            window.location.href = "https://buy.stripe.com/test_v2_mock_product"; // Link de checkout do Stripe/MercadoPago
+        }, 1500);
     }
 }
 

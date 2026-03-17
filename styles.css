@@ -193,8 +193,14 @@ input:focus, textarea:focus { border: 1px solid var(--green); background: var(--
 .modal-bg.open { display: flex; opacity: 1; }
 .modal-box { background: var(--bg); width: 90%; max-width: 400px; padding: 25px; border-radius: 20px; position: relative; border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.5); transform: translateY(20px) scale(0.95); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 .modal-bg.open .modal-box { transform: translateY(0) scale(1); }
-.close-btn { position: absolute; top: 12px; left: 12px; background: rgba(128,128,128,0.2); border: none; font-size: 20px; color: var(--text); cursor: pointer; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
 .close-btn:hover { background: rgba(128,128,128,0.4); }
+
+/* TOASTS */
+.toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 12px 24px; border-radius: 30px; font-weight: 600; font-size: 14px; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.2); animation: slideUp 0.3s ease forwards; white-space: nowrap; }
+.toast.success { background: #00BA7C; color: #fff; }
+.toast.error { background: #F4212E; color: #fff; }
+.toast.info { background: #1D9BF0; color: #fff; }
+@keyframes slideUp { from { opacity: 0; transform: translate(-50%, 20px); } to { opacity: 1; transform: translate(-50%, 0); } }
 
 .config-section { margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border); }
 .config-section h4 { margin: 0 0 10px 0; font-size: 15px; color: #71767b; }

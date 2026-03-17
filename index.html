@@ -138,7 +138,7 @@
                         aria-label="Assinar Premium" title="Premium">💎</button>
                     <button class="btn-icon" onclick="abrirModal('modalConfig')" aria-label="Abrir Configurações"
                         title="Configurações">⚙️</button>
-                    <div id="googleBtn" role="button" aria-label="Fazer login com Google"></div>
+                    <button id="googleBtn" class="btn-green" style="padding: 6px 14px; font-size: 13px; margin: 0; width: auto;" onclick="loginManual()">Entrar</button>
                     <div class="user-mini" id="loggedArea" onclick="abrirModal('modalPerfil')" style="display:none;"
                         role="button" aria-label="Abrir Perfil" tabindex="0">
                         <img id="headerImg" src="" alt="Foto de perfil">
@@ -302,6 +302,9 @@
                             </svg>
                         </a>
                     </div>
+                </div>
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <button class="btn-green" style="width: auto; padding: 10px 20px; font-size: 14px; background: var(--border); color: var(--text);" onclick="loginManual()">Fazer Login / Criar Conta</button>
                 </div>
                 <p style="text-align: center;">&copy; 2024-2026 Animals Picture.<br><span data-i18n="rights">Todos os
                         direitos reservados.</span></p>

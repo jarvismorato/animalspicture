@@ -215,6 +215,7 @@ def delete_post(post_id):
 
     # Só o dono ou admin pode deletar
     ADMIN_EMAIL = "jarvismorato@gmail.com"
+    ADMIN_EMAIL2 = "moratogabriel660@gmail.com"
     post_found = None
     for p in posts:
         if p.get('id') == post_id:

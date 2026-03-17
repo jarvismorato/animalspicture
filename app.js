@@ -4,7 +4,7 @@
    Backend: servidor Python local em http://localhost:5000
    =================================================================== */
 
-const API = '/api';
+const API = 'https://animalspicture.onrender.com/api';
 
 // === VARIÁVEIS GLOBAIS ===
 let usuario = { nome: "", foto: "", email: "", premium: false };
@@ -517,6 +517,7 @@ async function publicar(e) {
     // Upload da imagem como arquivo
     const imgUrl = await uploadImage(base64);
     if (!imgUrl) {
+        mostrarToast("Erro ao processar imagem. O servidor pode estar offline ou a imagem excedeu 2MB.", "error");
         submitBtn.textContent = originalText;
         submitBtn.disabled = false;
         return;
